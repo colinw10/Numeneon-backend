@@ -35,6 +35,20 @@ You must:
 
 ---
 
+## ⚠️ YOUR RESPONSIBILITY: Run Migrations for the Team!
+
+After you finish your Profile model, **you run `makemigrations` for everyone**:
+
+```bash
+python manage.py makemigrations
+```
+
+Then push to the repo. The team will pull your changes and run `migrate` on their end.
+
+**Why you?** Your Profile model is the foundation — other models (Posts, Friends) depend on User existing first.
+
+---
+
 ## Task Breakdown
 
 ### ✅ Task 1: Create Profile Model
