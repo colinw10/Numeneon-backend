@@ -3,12 +3,12 @@
 ## Here is the basic gist of the backend folders and their use
 
 backend/
-├── manage.py              ← Your command center
-├── huddl/                 ← Project settings/config
-│   ├── settings.py        ← Master config
-│   └── urls.py            ← Main routing
-├── db.sqlite3             ← Your database
-└── venv/                  ← Python packages
+├── manage.py ← Your command center
+├── huddl/ ← Project settings/config
+│ ├── settings.py ← Master config
+│ └── urls.py ← Main routing
+├── db.sqlite3 ← Your database
+└── venv/ ← Python packages
 
 This guide will walk you through setting up the Huddl Django backend on your local machine.
 
@@ -74,6 +74,7 @@ This installs Django and all other required packages automatically from the Pipf
 **⚠️ DO NOT run migrations until Natalia announces they are ready!**
 
 **Order of Operations:**
+
 1. Natalia creates migrations AFTER all models are implemented
 2. Natalia pushes migration files to czar
 3. Everyone pulls from czar: `git pull czar dev`

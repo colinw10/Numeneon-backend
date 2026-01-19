@@ -86,19 +86,19 @@ The `posts_and_users.json` file contains:
 
 ### 👥 Users (12 total)
 
-| Username       | Name           | Email             | **Log in as** |
-| -------------- | -------------- | ----------------- | ------------- |
-| `pabloPistola` | Pablo Cordero  | pablo@test.com    | Pablo         |
+| Username       | Name           | Email                | **Log in as** |
+| -------------- | -------------- | -------------------- | ------------- |
+| `pabloPistola` | Pablo Cordero  | pablo@test.com       | Pablo         |
 | `colinw`       | Colin Weir     | colin@numeneon.com   | **Colin**     |
 | `crystalr`     | Crystal Ruiz   | crystal@numeneon.com | **Crystal**   |
 | `nataliap`     | Natalia P      | natalia@numeneon.com | **Natalia**   |
 | `arthurb`      | Arthur Bernier | arthur@numeneon.com  | Arthur        |
-| `titod`        | Tito Del Valle | tito@test.com     | **Tito**      |
+| `titod`        | Tito Del Valle | tito@test.com        | **Tito**      |
 | `tito`         | Tito           | tito@numeneon.com    | (test user)   |
 | `alexr`        | Alex Rivera    | alex@numeneon.com    | (test user)   |
 | `jordanl`      | Jordan Lee     | jordan@numeneon.com  | (test user)   |
 | `samc`         | Sam Chen       | sam@numeneon.com     | (test user)   |
-| `ASI`          | A I            | asi@real.com      | (test user)   |
+| `ASI`          | A I            | asi@real.com         | (test user)   |
 | `admin`        | Admin          | admin@numeneon.com   | (admin only)  |
 
 **Password for ALL users:** `test123`
