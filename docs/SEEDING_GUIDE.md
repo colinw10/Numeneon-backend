@@ -81,24 +81,76 @@ The `posts_and_users.json` file contains:
 
 ### 👥 Users (12 total)
 
-| Username       | Name           | Email             | Password    |
-| -------------- | -------------- | ----------------- | ----------- |
-| `pabloPistola` | Pablo Cordero  | pablo@test.com    | `test123`   |
-| `colinw`       | Colin Weir     | colin@huddl.com   | `test123`   |
-| `crystalr`     | Crystal Ruiz   | crystal@huddl.com | `test123`   |
-| `nataliap`     | Natalia P      | natalia@huddl.com | `test123`   |
-| `arthurb`      | Arthur Bernier | arthur@huddl.com  | `test123`   |
-| `titod`        | Tito Del Valle | tito@test.com     | `test123`   |
-| `tito`         | Tito           | tito@huddl.com    | `test123`   |
-| `alexr`        | Alex Rivera    | alex@huddl.com    | `test123`   |
-| `jordanl`      | Jordan Lee     | jordan@huddl.com  | `test123`   |
-| `samc`         | Sam Chen       | sam@huddl.com     | `test123`   |
-| `ASI`          | A I            | asi@real.com      | `test123`   |
-| `admin`        | Admin          | admin@huddl.com   | (superuser) |
+| Username       | Name           | Email             | **Log in as** |
+| -------------- | -------------- | ----------------- | ------------- |
+| `pabloPistola` | Pablo Cordero  | pablo@test.com    | Pablo         |
+| `colinw`       | Colin Weir     | colin@huddl.com   | **Colin**     |
+| `crystalr`     | Crystal Ruiz   | crystal@huddl.com | **Crystal**   |
+| `nataliap`     | Natalia P      | natalia@huddl.com | **Natalia**   |
+| `arthurb`      | Arthur Bernier | arthur@huddl.com  | Arthur        |
+| `titod`        | Tito Del Valle | tito@test.com     | **Tito**      |
+| `tito`         | Tito           | tito@huddl.com    | (test user)   |
+| `alexr`        | Alex Rivera    | alex@huddl.com    | (test user)   |
+| `jordanl`      | Jordan Lee     | jordan@huddl.com  | (test user)   |
+| `samc`         | Sam Chen       | sam@huddl.com     | (test user)   |
+| `ASI`          | A I            | asi@real.com      | (test user)   |
+| `admin`        | Admin          | admin@huddl.com   | (admin only)  |
+
+**Password for ALL users:** `test123`
+
+**Example:** Colin logs in with username `colinw` and password `test123`
 
 ### 👤 Profiles
 
 User profiles with bios and avatars (linked to users above).
+
+**Note:** Only `pabloPistola` has a bio currently. Other profiles are blank - see below for how to add yours!
+
+---
+
+## Customizing YOUR Profile (Bio, Avatar)
+
+After loading the seed data, you'll want to add your own bio. Here's how:
+
+### Option 1: Django Admin (Easiest)
+
+1. Start server: `python manage.py runserver`
+2. Go to: `http://localhost:8000/admin/`
+3. Log in as `admin` with password `test123`
+4. Click **Profiles** → Find your profile → Edit bio, avatar, etc.
+5. Save!
+
+**Note:** You must log into Django Admin as `admin` (the superuser), NOT your regular user. Regular users can't access the admin panel.
+
+### Option 2: Django Shell
+
+```bash
+python manage.py shell
+```
+
+```python
+from users.models import Profile
+from django.contrib.auth.models import User
+
+# Get your user
+user = User.objects.get(username='colinw')  # Change to YOUR username
+
+# Update your profile
+user.profile.bio = "Your bio here!"
+user.profile.avatar = "https://example.com/your-avatar.jpg"
+user.profile.save()
+
+print("Done!")
+exit()
+```
+
+### Option 3: Through the Frontend
+
+Once the app is running, use the profile edit feature (if implemented).
+
+---
+
+**Remember:** Changes you make only affect YOUR local database. Your teammates won't see your bio changes unless you export and share the data again.
 
 ### 📝 Posts
 
