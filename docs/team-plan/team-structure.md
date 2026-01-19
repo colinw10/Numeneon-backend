@@ -82,27 +82,15 @@ pipenv shell
 
 ### 2. Database Setup
 
-⚠️ **IMPORTANT: Follow this order!**
-
-| Step | Who         | Command                                                            |
-| ---- | ----------- | ------------------------------------------------------------------ |
-| 1    | Everyone    | Build your models first                                            |
-| 2    | **Natalia** | `python manage.py makemigrations` (creates migration files)        |
-| 3    | Everyone    | `python manage.py migrate` (applies migrations to your database)   |
-| 4    | Everyone    | `python manage.py loaddata posts_and_users.json` (loads seed data) |
-
-**Why this order?**
-
-- Models must exist before migrations can be created
-- Natalia's Profile model is the foundation (other models depend on User)
-- Migrations must run before seed data can be loaded
-- See `docs/SEEDING_GUIDE.md` for more details
-
 ```bash
-# After Natalia runs makemigrations and pushes:
+# Run migrations
 python manage.py migrate
+
+# Create admin account (for Django admin panel)
+python manage.py createsuperuser
+
+# Load demo data (REQUIRED for matching frontend!)
 python manage.py loaddata posts_and_users.json
-python manage.py createsuperuser  # Optional: for Django admin
 ```
 
 ### 3. Run Development Server
