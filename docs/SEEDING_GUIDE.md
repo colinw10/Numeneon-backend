@@ -84,17 +84,17 @@ The `posts_and_users.json` file contains:
 | Username       | Name           | Email             | **Log in as** |
 | -------------- | -------------- | ----------------- | ------------- |
 | `pabloPistola` | Pablo Cordero  | pablo@test.com    | Pablo         |
-| `colinw`       | Colin Weir     | colin@huddl.com   | **Colin**     |
-| `crystalr`     | Crystal Ruiz   | crystal@huddl.com | **Crystal**   |
-| `nataliap`     | Natalia P      | natalia@huddl.com | **Natalia**   |
-| `arthurb`      | Arthur Bernier | arthur@huddl.com  | Arthur        |
+| `colinw`       | Colin Weir     | colin@numeneon.com   | **Colin**     |
+| `crystalr`     | Crystal Ruiz   | crystal@numeneon.com | **Crystal**   |
+| `nataliap`     | Natalia P      | natalia@numeneon.com | **Natalia**   |
+| `arthurb`      | Arthur Bernier | arthur@numeneon.com  | Arthur        |
 | `titod`        | Tito Del Valle | tito@test.com     | **Tito**      |
-| `tito`         | Tito           | tito@huddl.com    | (test user)   |
-| `alexr`        | Alex Rivera    | alex@huddl.com    | (test user)   |
-| `jordanl`      | Jordan Lee     | jordan@huddl.com  | (test user)   |
-| `samc`         | Sam Chen       | sam@huddl.com     | (test user)   |
+| `tito`         | Tito           | tito@numeneon.com    | (test user)   |
+| `alexr`        | Alex Rivera    | alex@numeneon.com    | (test user)   |
+| `jordanl`      | Jordan Lee     | jordan@numeneon.com  | (test user)   |
+| `samc`         | Sam Chen       | sam@numeneon.com     | (test user)   |
 | `ASI`          | A I            | asi@real.com      | (test user)   |
-| `admin`        | Admin          | admin@huddl.com   | (admin only)  |
+| `admin`        | Admin          | admin@numeneon.com   | (admin only)  |
 
 **Password for ALL users:** `test123`
 
