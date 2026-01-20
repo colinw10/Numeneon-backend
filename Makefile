@@ -10,8 +10,14 @@
 #
 # HOW TO USE:
 # 1. Open terminal
-# 2. Navigate to this folder: cd ~/code/my-stuff/huddl-app
+# 2. Navigate to this folder (wherever you cloned the repo)
 # 3. Type: make <shortcut>
+#
+# RUN FROM ANYWHERE:
+#   make -C /path/to/Numeneon-backend b
+#   Or add this alias to ~/.zshrc (replace path with YOUR repo location):
+#   alias numeneon='make -C /path/to/Numeneon-backend'
+#   Then just type: numeneon b
 #
 # EXAMPLES:
 #   make b          → starts the backend server

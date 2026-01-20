@@ -40,7 +40,6 @@ Hint: For URLs: URLField(max_length=500, blank=True)
 Hint: Add __str__ method to return username for admin readability
 Hint: For timestamps: auto_now_add=True (created), auto_now=True (updated)
 """
-
 from django.db import models
 from django.contrib.auth.models import User
 
