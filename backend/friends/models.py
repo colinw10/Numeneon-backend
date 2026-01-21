@@ -49,7 +49,7 @@ class FriendRequest(models.Model):
       on_delete=models.CASCADE,
       related_name='received_requests'
     )
-    created_at = models.DateTimeFiel(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('from_user', 'to_user')
