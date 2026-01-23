@@ -1,11 +1,22 @@
 # Database Seeding Steps (Updated)
 
+> ⚠️ **IMPORTANT**: Always run commands from the `backend/` directory, NOT the project root!
+
 ## Prerequisites
 
-- PostgreSQL running
+- PostgreSQL running (`brew services start postgresql` on Mac)
 - `numeneon` database exists
-- You're in the `backend/` directory
+- You're in the `backend/` directory (run `cd backend` first!)
 - Virtual environment activated (`pipenv shell`)
+
+## Which manage.py?
+
+There are TWO manage.py files - **use the one in `backend/`**:
+
+| File                 | Settings            | Database   | Use?   |
+| -------------------- | ------------------- | ---------- | ------ |
+| `/manage.py` (root)  | `backend.settings`  | SQLite     | ❌ NO  |
+| `/backend/manage.py` | `numeneon.settings` | PostgreSQL | ✅ YES |
 
 ---
 
@@ -120,6 +131,26 @@ def create_user_profile(sender, instance, created, **kwargs):
 ```
 
 If it uses `Profile.objects.create(user=instance)`, loaddata will fail with duplicate key errors.
+
+---
+
+## Important: Signup View Fix (Fixed Jan 2026)
+
+The `users/views.py` signup function must NOT manually create a profile - the signal already does it!
+
+**❌ WRONG (causes 500 error on signup):**
+
+```python
+user = User.objects.create_user(...)
+profile = Profile.objects.create(user=user)  # DUPLICATE! Signal already created one
+```
+
+**✅ CORRECT:**
+
+```python
+user = User.objects.create_user(...)
+profile = user.profile  # Just access the profile the signal created
+```
 
 ---
 
