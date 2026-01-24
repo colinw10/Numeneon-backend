@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'posts',
     'friends',
+    'messages_app',  # Direct messaging
 ]
 
 # MIDDLEWARE - Request/response pipeline (exactly like Express app.use() chain)
