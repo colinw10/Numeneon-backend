@@ -17,3 +17,4 @@ __pycache__/
 .DS_Store
 backend/venv/
 venv/
+db.sqlite3
