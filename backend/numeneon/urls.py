@@ -34,6 +34,9 @@ urlpatterns = [
     # TODO (Crystal): Add friends URLs
     # Uncomment and verify after implementing friends/urls.py:
     path('api/friends/', include('friends.urls')),
+
+    # Messages URLs
+    path('api/messages/', include('messages_app.urls')),
 ]
 
 # Serve media files in development
