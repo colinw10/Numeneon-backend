@@ -38,6 +38,6 @@ for u in team_users:
         print(f\"Already exists: {u['username']}\")
 "
 
-# Run seed scripts to populate sample data
-python manage.py seed_posts || echo "seed_posts not available or failed"
+# Run seed scripts to populate sample data (standalone scripts, not manage.py commands)
+python seed_posts.py || echo "seed_posts.py failed"
 python manage.py seed_messages || echo "seed_messages not available or failed"

@@ -1,34 +1,73 @@
-# Test Accounts on Production (Render)
+# Test Accounts & Seed Data on Production (Render)
 
 > **Last Updated:** January 24, 2026
 
 ---
 
-## Pre-Created Test Accounts
+## Quick Start
 
-When the backend deploys to Render, these accounts are automatically created:
-
-| Username | Email | Password |
-|----------|-------|----------|
-| pabloPistola | pablo@test.com | test123 |
-| natalia | natalia@test.com | test123 |
-| crystal | crystal@test.com | test123 |
-| colin | colin@test.com | test123 |
-| admin | admin@numeneon.com | admin123 |
+After deploy, the database is pre-populated with users and posts. Just log in and explore!
 
 ---
 
-## How to Log In
+## Test Accounts (For Teammates)
 
-1. Go to the frontend: https://numeneon-frontend.vercel.app/login
-2. Enter your **email** (not username!) and password
+| Username | Email | Password | Notes |
+|----------|-------|----------|-------|
+| natalia | natalia@test.com | test123 | Team login |
+| crystal | crystal@test.com | test123 | Team login |
+| colin | colin@test.com | test123 | Team login |
+| pabloPistola | pablo@test.com | test123 | Team login |
+| admin | admin@numeneon.com | admin123 | Django admin |
+
+### How to Log In
+1. Go to: https://numeneon-frontend.vercel.app/login
+2. Enter your **EMAIL** (not username!) and password
 3. Click Login
 
 Example:
 ```
-Email: pablo@test.com
+Email: natalia@test.com
 Password: test123
 ```
+
+---
+
+## Seed Data Users (Post Authors)
+
+These users are created by `seed_posts.py` and have posts in the feed:
+
+| Username | Email | First Name | Posts |
+|----------|-------|------------|-------|
+| pabloPistola | pablo@test.com | Pablo | 24 posts |
+| titod | tito@test.com | Tito | 22 posts |
+| arthurb | arthur@test.com | Arthur | 22 posts |
+| nataliap | natalia@test.com | Natalia | 20 posts |
+| colinw | colin@test.com | Colin | 22 posts |
+| crystalr | crystal@test.com | Crystal | 20 posts |
+
+**All passwords:** `test123`
+
+---
+
+## What to Expect After Deploy
+
+### Posts (~130 total)
+- Posts spread across 365 days (for heatmap/analytics)
+- 3 post types: `thoughts`, `media`, `milestones`
+- Media posts have real image URLs (auroras, cyberpunk cities, tech)
+- Engagement stats (likes, comments, shares) for analytics
+
+### Sample Post Content
+- Pablo: "Kata: choreographed violence against nobody."
+- Arthur: "Quantum entanglement > WiFi reliability."
+- Natalia: "Django ORM is just SQL with extra steps."
+- Colin: "Meetings could have been emails. All of them."
+- Crystal: "CSS grid finally makes sense. Only took a week."
+- Tito: "Debugging is leaving angry comments for past me."
+
+### Messages
+- Sample conversations between users (from `seed_messages`)
 
 ---
 
@@ -42,53 +81,25 @@ To access Django admin:
 
 ---
 
-## How This Works
+## Triggering a Fresh Seed
 
-The `build.sh` script runs on every Render deploy and:
+If you need to reset and re-seed:
 
-1. Creates the team user accounts (if they don't exist)
-2. Creates a Profile for each user
-3. Runs `seed_posts` to create sample posts
-4. Runs `seed_messages` to create sample conversations
+1. Go to **Render Dashboard** → your Web Service
+2. Click **Manual Deploy** → **Clear build cache & deploy**
+3. Wait for deploy to complete (~2-3 min)
 
-This happens automatically - **you don't need to do anything**.
-
----
-
-## Adding a New Test User
-
-If you want to add another test user, edit `build.sh` in the repo root:
-
-```bash
-# Find this section and add to the team_users list:
-team_users = [
-    {'username': 'pabloPistola', 'email': 'pablo@test.com', ...},
-    {'username': 'natalia', 'email': 'natalia@test.com', ...},
-    # ADD YOUR USER HERE:
-    {'username': 'yourname', 'email': 'yourname@test.com', 'password': 'test123', 'first_name': 'Your', 'last_name': 'Name'},
-]
-```
-
-Then push to trigger a redeploy.
+Note: `seed_posts.py` clears existing posts before creating new ones.
 
 ---
 
-## Resetting the Database
+## Important Notes
 
-If you need a fresh database on Render:
+**Two sets of users exist:**
+- **Team logins** (natalia, crystal, colin) - for you to log in
+- **Seed users** (nataliap, colinw, crystalr) - authors of posts in feed
 
-1. Go to Render Dashboard → your PostgreSQL database
-2. Click **"Reset Database"** (this deletes everything!)
-3. Go to your Web Service → **Manual Deploy** → **Deploy latest commit**
-4. The seed scripts will recreate all users and sample data
+They have similar names but different usernames.
 
----
-
-## Sample Data Included
-
-After deploy, the database has:
-- ✅ 5 user accounts with profiles
-- ✅ Sample posts (from `seed_posts`)
-- ✅ Sample messages/conversations (from `seed_messages`)
-
-You can start testing immediately!
+**Use EMAIL to login, not username!**
+The login form uses email. Use `natalia@test.com`, not `natalia`.
