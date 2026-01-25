@@ -1,124 +1,279 @@
-# CORS Configuration
+# CORS Configuration & Deployment Issues
 
 > **Last Updated:** January 24, 2026
 
 ---
 
-## What Changed
+## Quick Summary
 
-Updated `backend/numeneon/settings.py` to configure CORS for production deployment.
+This doc covers all the deployment issues we encountered connecting the Vercel frontend to the Render backend, and how we fixed them.
 
-### Before (Development Only)
+---
+
+## Issues We Encountered & Fixes
+
+### 1. DisallowedHost Error (403)
+
+**Symptom:** Django returned `DisallowedHost at /api/auth/signup/`
+
+**Cause:** Django's `ALLOWED_HOSTS` didn't include the Render domain.
+
+**Fix:**
 
 ```python
-CORS_ALLOW_ALL_ORIGINS = True  # For development only
+# settings.py
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'numeneon-backend.onrender.com',
+    '.onrender.com',  # Allow all Render subdomains
+]
 ```
 
-### After (Production Ready)
+---
+
+### 2. CORS Error (Access-Control-Allow-Origin)
+
+**Symptom:** Browser blocked request with "CORS policy: No 'Access-Control-Allow-Origin' header"
+
+**Cause:** Backend didn't allow requests from Vercel's domain.
+
+**Fix:**
 
 ```python
+# settings.py
 CORS_ALLOWED_ORIGINS = [
     'https://numeneon-frontend.vercel.app',
     'https://numeneon-backend.onrender.com',
-    'http://localhost:5173',  # Vite dev server ✅ STILL WORKS
-    'http://localhost:3000',  # React dev server ✅ STILL WORKS
+    'http://localhost:5173',  # Vite dev server
+    'http://localhost:3000',  # React dev server
 ]
-CORS_ALLOW_CREDENTIALS = True
 ```
 
-> ⚠️ **TEAMMATES:** Local development STILL WORKS! `localhost:5173` and `localhost:3000` are included. You don't need to change anything locally.
-
 ---
 
-## Why This Change
+### 3. CORS for Vercel Preview URLs
 
-### Problem
+**Symptom:** Production worked but preview deployments got CORS errors.
 
-- `CORS_ALLOW_ALL_ORIGINS = True` allows **any** website to make requests to our API
-- This is a security risk in production (other sites could make authenticated requests)
+**Cause:** Vercel creates random URLs like `numeneon-frontend-abc123-user.vercel.app` for each deployment/branch.
 
-### Solution
-
-- `CORS_ALLOWED_ORIGINS` explicitly whitelists only trusted domains
-- `CORS_ALLOW_CREDENTIALS = True` allows cookies and Authorization headers to be sent cross-origin (required for JWT auth)
-
----
-
-## Allowed Origins
-
-| Origin                                  | Purpose                       |
-| --------------------------------------- | ----------------------------- |
-| `https://numeneon-frontend.vercel.app`  | Production frontend on Vercel |
-| `https://numeneon-backend.onrender.com` | Production backend on Render  |
-| `http://localhost:5173`                 | Local Vite dev server ✅      |
-| `http://localhost:3000`                 | Local React dev server ✅     |
-
----
-
-## How CORS Works
-
-```
-┌─────────────────────┐         ┌─────────────────────┐
-│   Vercel Frontend   │         │   Render Backend    │
-│  (React App)        │         │   (Django API)      │
-│                     │         │                     │
-│  Origin:            │  HTTP   │  Checks:            │
-│  numeneon-frontend  │ ──────► │  Is origin in       │
-│  .vercel.app        │         │  CORS_ALLOWED_      │
-│                     │ ◄────── │  ORIGINS?           │
-│                     │  ✅ Yes │                     │
-└─────────────────────┘         └─────────────────────┘
-```
-
-1. Browser sends request with `Origin` header
-2. Django checks if origin is in `CORS_ALLOWED_ORIGINS`
-3. If yes, responds with `Access-Control-Allow-Origin` header
-4. Browser allows the response to be read by frontend
-
----
-
-## Adding New Origins
-
-If you deploy to a new domain, add it to the list:
+**Fix:** Use regex patterns to match all preview URLs:
 
 ```python
+# settings.py
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://numeneon-frontend.*\.vercel\.app$",
+    r"^https://numeneon-frontend-.*\.vercel\.app$",
+]
+```
+
+**What is CORS regex?** A wildcard pattern to match multiple URLs:
+
+```
+Instead of listing:      Use pattern:
+site-abc.vercel.app     site-*.vercel.app ← matches ALL
+site-xyz.vercel.app
+site-123.vercel.app
+```
+
+---
+
+### 4. CSRF Verification Failed (403)
+
+**Symptom:** Django returned `403 Forbidden - CSRF verification failed`
+
+**Cause:** `CORS_ALLOW_CREDENTIALS = True` tells browser to send cookies, which triggers Django's CSRF protection.
+
+**Fix:** For JWT-based APIs, we don't use cookies - tokens go in the `Authorization` header. So disable credentials:
+
+```python
+# settings.py
+CORS_ALLOW_CREDENTIALS = False  # JWT uses headers, not cookies
+```
+
+**Why this works:**
+
+- **Before:** Browser sends cookies → Django expects CSRF token → Error
+- **After:** No cookies sent → JWT in `Authorization: Bearer <token>` header → No CSRF needed
+
+---
+
+### 5. Database Connection Error
+
+**Symptom:** Backend connected to localhost instead of Render's PostgreSQL.
+
+**Cause:** `DATABASES` was hardcoded to localhost. Render provides `DATABASE_URL` env var.
+
+**Fix:**
+
+```python
+# settings.py
+import os
+import dj_database_url
+
+if os.environ.get('DATABASE_URL'):
+    # Production: use Render's PostgreSQL
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600,
+        )
+    }
+else:
+    # Development: use local PostgreSQL
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'numeneon',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
+```
+
+---
+
+### 6. Build Script Path Error
+
+**Symptom:** Render couldn't find `manage.py`.
+
+**Cause:** `build.sh` was running from repo root, but `manage.py` is in `backend/`.
+
+**Fix:**
+
+```bash
+# build.sh
+cd backend  # ← Added this line
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py collectstatic --no-input
+```
+
+---
+
+### 7. Static Files Error
+
+**Symptom:** `collectstatic` failed - no `STATIC_ROOT` configured.
+
+**Fix:**
+
+```python
+# settings.py
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+```
+
+---
+
+## Current Working Configuration
+
+```python
+# settings.py - Key settings for production
+
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'numeneon-backend.onrender.com',
+    '.onrender.com',
+]
+
 CORS_ALLOWED_ORIGINS = [
     'https://numeneon-frontend.vercel.app',
-    'https://your-new-domain.com',  # Add new domain here
+    'https://numeneon-backend.onrender.com',
     'http://localhost:5173',
     'http://localhost:3000',
 ]
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://numeneon-frontend.*\.vercel\.app$",
+    r"^https://numeneon-frontend-.*\.vercel\.app$",
+]
+
+CORS_ALLOW_CREDENTIALS = False  # JWT uses headers, not cookies
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    # ...
+}
 ```
 
 ---
 
-## Related Settings
+## Architecture Diagram
 
-These were already configured in the project:
-
-```python
-# In INSTALLED_APPS
-'corsheaders',
-
-# In MIDDLEWARE (must be first!)
-'corsheaders.middleware.CorsMiddleware',
+```
+┌─────────────────────────┐       HTTPS        ┌─────────────────────────┐
+│      VERCEL             │                    │       RENDER            │
+│  (React Frontend)       │                    │   (Django Backend)      │
+│                         │                    │                         │
+│  numeneon-frontend      │    POST /api/      │  numeneon-backend       │
+│  .vercel.app            │  ───────────────►  │  .onrender.com          │
+│                         │                    │                         │
+│  Sends:                 │                    │  Checks:                │
+│  - Origin header        │                    │  1. ALLOWED_HOSTS ✓     │
+│  - Authorization:       │  ◄───────────────  │  2. CORS origin ✓       │
+│    Bearer <JWT>         │    JSON response   │  3. JWT token ✓         │
+└─────────────────────────┘                    └─────────────────────────┘
+                                                          │
+                                                          ▼
+                                               ┌─────────────────────────┐
+                                               │    RENDER PostgreSQL    │
+                                               │    (DATABASE_URL)       │
+                                               └─────────────────────────┘
 ```
 
 ---
 
-## Troubleshooting
+## Render Settings
 
-### "CORS policy: No 'Access-Control-Allow-Origin' header"
+| Setting        | Value                                              |
+| -------------- | -------------------------------------------------- |
+| Root Directory | (empty - uses repo root)                           |
+| Build Command  | `./build.sh`                                       |
+| Start Command  | `cd backend && gunicorn numeneon.wsgi:application` |
+| DATABASE_URL   | (auto-set by Render PostgreSQL)                    |
 
-- Check that the frontend URL is exactly in `CORS_ALLOWED_ORIGINS`
-- Trailing slashes matter: `https://example.com` ≠ `https://example.com/`
+---
 
-### "CORS policy: credentials flag is true, but..."
+## Troubleshooting Checklist
 
-- Ensure `CORS_ALLOW_CREDENTIALS = True` is set
-- Frontend must include `credentials: 'include'` in fetch/axios
+If something breaks, check in this order:
 
-### Requests work locally but not in production
+1. **Is it deployed?** Check Render Events tab for green checkmark
+2. **Is the URL right?** Backend is `/api/...` not just `/...`
+3. **ALLOWED_HOSTS?** Does it include the domain?
+4. **CORS origin?** Is the frontend URL in `CORS_ALLOWED_ORIGINS` or matched by regex?
+5. **CSRF error?** Make sure `CORS_ALLOW_CREDENTIALS = False`
+6. **Database?** Check `DATABASE_URL` is set in Render Environment
 
-- Make sure the Vercel URL is in `CORS_ALLOWED_ORIGINS`
-- Redeploy backend after changing settings
+---
+
+## Testing Backend Directly
+
+Use curl to test without frontend:
+
+```bash
+# Test signup
+curl -X POST https://numeneon-backend.onrender.com/api/auth/signup/ \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser","email":"test@test.com","password":"test123"}'
+
+# Test CORS preflight
+curl -I -X OPTIONS https://numeneon-backend.onrender.com/api/auth/signup/ \
+  -H "Origin: https://numeneon-frontend.vercel.app" \
+  -H "Access-Control-Request-Method: POST"
+```
+
+---
+
+## Local Development Still Works!
+
+All these changes are backwards compatible. Running locally:
+
+- `localhost:5173` (Vite) ✅ Still in CORS list
+- `localhost:3000` (React) ✅ Still in CORS list
+- Local PostgreSQL ✅ Falls back when no `DATABASE_URL`
