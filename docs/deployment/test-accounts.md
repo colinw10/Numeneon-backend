@@ -8,13 +8,13 @@
 
 When the backend deploys to Render, these accounts are automatically created:
 
-| Username | Email | Password |
-|----------|-------|----------|
-| pabloPistola | pablo@test.com | test123 |
-| natalia | natalia@test.com | test123 |
-| crystal | crystal@test.com | test123 |
-| colin | colin@test.com | test123 |
-| admin | admin@numeneon.com | admin123 |
+| Username     | Email              | Password |
+| ------------ | ------------------ | -------- |
+| pabloPistola | pablo@test.com     | test123  |
+| natalia      | natalia@test.com   | test123  |
+| crystal      | crystal@test.com   | test123  |
+| colin        | colin@test.com     | test123  |
+| admin        | admin@numeneon.com | admin123 |
 
 ---
 
@@ -25,6 +25,7 @@ When the backend deploys to Render, these accounts are automatically created:
 3. Click Login
 
 Example:
+
 ```
 Email: pablo@test.com
 Password: test123
@@ -35,6 +36,7 @@ Password: test123
 ## Admin Panel
 
 To access Django admin:
+
 1. Go to: https://numeneon-backend.onrender.com/admin/
 2. Login with:
    - Username: `admin`
@@ -87,6 +89,7 @@ If you need a fresh database on Render:
 ## Sample Data Included
 
 After deploy, the database has:
+
 - ✅ 5 user accounts with profiles
 - ✅ Sample posts (from `seed_posts`)
 - ✅ Sample messages/conversations (from `seed_messages`)
