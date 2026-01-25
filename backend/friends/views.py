@@ -163,22 +163,3 @@ def remove_friend(request, user_id):
     Friendship.objects.filter(user=target, friend=me).delete()
 
     return Response({'message': 'Friend removed'}, status=status.HTTP_200_OK)
-
-
-@api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
-def remove_friend(request, user_id):
-    """
-    Removes a friend from your friend list
-    """
-    me = request.user
-
-    try:
-        target = User.objects.get(id=user_id)
-    except User.DoesNotExist:
-        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-
-    Friendship.objects.filter(user=me, friend=target).delete()
-    Friendship.objects.filter(user=target, friend=me).delete()
-
-    return Response({'message': 'Friend removed'}, status=status.HTTP_200_OK)

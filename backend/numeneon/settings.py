@@ -20,7 +20,12 @@ SECRET_KEY = 'django-insecure-tl6jpad%y3%v%xria!-k=ez-=0h7wqz$ub=&a2*ka9veckq3p8
 # Debug mode - shows detailed errors (like NODE_ENV === 'development')
 DEBUG = True
 
-ALLOWED_HOSTS = []  # Whitelist of domains (like CORS origins)
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'numeneon-backend.onrender.com',
+    '.onrender.com',  # Allow all Render subdomains
+]
 
 # INSTALLED_APPS - Django apps/plugins (like Express middleware & route modules)
 # Add your custom apps here (e.g., 'api', 'users', 'posts')
@@ -49,7 +54,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',      # Security headers (helmet in Express)
     'django.contrib.sessions.middleware.SessionMiddleware',  # Session handling (express-session)
     'django.middleware.common.CommonMiddleware',           # Common HTTP features
-    'django.middleware.csrf.CsrfViewMiddleware',           # CSRF protection (csurf in Express)
+    # 'django.middleware.csrf.CsrfViewMiddleware',         # DISABLED - using JWT, not cookies
     'django.contrib.auth.middleware.AuthenticationMiddleware',  # Attaches user to request
     'django.contrib.messages.middleware.MessageMiddleware',     # Flash messages
     'django.middleware.clickjacking.XFrameOptionsMiddleware',   # X-Frame-Options header
@@ -78,17 +83,26 @@ TEMPLATES = [
 WSGI_APPLICATION = 'numeneon.wsgi.application'
 
 # DATABASE - Connection config
-# Using PostgreSQL (like pg + Pool in Express)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'numeneon',
-        'USER': '',  # Uses your macOS user by default
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '5432',
+import os
+import dj_database_url
+
+if os.environ.get('DATABASE_URL'):
+    # Production: use Render's DATABASE_URL
+    DATABASES = {
+        'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
     }
-}
+else:
+    # Local development: use localhost PostgreSQL
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'numeneon',
+            'USER': '',
+            'PASSWORD': '',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 # Password validation rules (like bcrypt + validation middleware)
 # Relaxed for development - tighten for production!
@@ -109,14 +123,27 @@ USE_TZ = True
 
 # Static files URL (like app.use('/static', express.static('public')))
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default ID field type for models (like MongoDB ObjectId or auto-increment in SQL)
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS - Allow React frontend to talk to Django
-CORS_ALLOW_ALL_ORIGINS = True  # For development only
+CORS_ALLOWED_ORIGINS = [
+    'https://numeneon-frontend.vercel.app',
+    'https://numeneon-backend.onrender.com',
+    'http://localhost:5173',  # Vite dev server
+    'http://localhost:3000',  # React dev server
+]
+# Allow Vercel preview deployments (random URLs like numeneon-frontend-abc123-user.vercel.app)
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://numeneon-frontend.*\.vercel\.app$",
+    r"^https://numeneon-frontend-.*\.vercel\.app$",
+]
+# JWT goes in Authorization header, not cookies - no credentials needed
+CORS_ALLOW_CREDENTIALS = False
 
-# REST Framework settings
+# REST Framework settings - JWT only, no session auth = no CSRF needed
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
