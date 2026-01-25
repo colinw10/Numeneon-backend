@@ -135,9 +135,10 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',  # Vite dev server
     'http://localhost:3000',  # React dev server
 ]
-# Allow Vercel preview deployments (random URLs)
+# Allow Vercel preview deployments (random URLs like numeneon-frontend-abc123-user.vercel.app)
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://numeneon-frontend.*\.vercel\.app$",
+    r"^https://numeneon-frontend-.*\.vercel\.app$",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
