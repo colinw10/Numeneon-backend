@@ -11,6 +11,9 @@ urlpatterns = [
     # GET messages with specific user
     path('conversation/<int:user_id>/', views.ConversationView.as_view(), name='conversation-detail'),
     
-    # POST mark messages from user as read
+    # POST/GET mark messages as read (query param version)
+    path('read_all/', views.read_all, name='read-all'),
+    
+    # POST mark messages from user as read (path param version)
     path('conversation/<int:user_id>/read/', views.mark_as_read, name='mark-as-read'),
 ]

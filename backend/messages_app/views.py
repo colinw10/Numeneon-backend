@@ -79,6 +79,26 @@ def conversation_list(request):
     return Response(conversations)
 
 
+@api_view(['POST', 'GET'])
+@permission_classes([IsAuthenticated])
+def read_all(request):
+    """
+    Mark all messages from a specific user as read.
+    Accepts user_id as query parameter: /api/messages/read_all/?user_id=123
+    """
+    user_id = request.query_params.get('user_id')
+    if not user_id:
+        return Response({'error': 'user_id query parameter required'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    updated = Message.objects.filter(
+        sender_id=user_id,
+        receiver=request.user,
+        is_read=False
+    ).update(is_read=True)
+    
+    return Response({'marked_read': updated})
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def mark_as_read(request, user_id):
