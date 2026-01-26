@@ -10,7 +10,7 @@
 WebSocket support has been successfully added to the Numeneon backend! The implementation includes:
 
 - ✅ Real-time friend request notifications
-- ✅ Real-time friend acceptance notifications  
+- ✅ Real-time friend acceptance notifications
 - ✅ Real-time message notifications
 - ✅ JWT authentication for WebSocket connections
 - ✅ Django Channels with Daphne ASGI server

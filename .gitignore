@@ -18,3 +18,9 @@ __pycache__/
 backend/venv/
 venv/
 db.sqlite3
+
+# Internal docs (not needed for instructor review)
+docs/dev-sessions/
+docs/seedUsers/
+docs/team-plan/
+docs/websockets/

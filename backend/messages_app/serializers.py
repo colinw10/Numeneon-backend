@@ -1,3 +1,4 @@
+from notifications.utils import notify_new_message
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Message
@@ -26,7 +27,24 @@ class MessageSerializer(serializers.ModelSerializer):
         receiver = User.objects.get(id=receiver_id)
         validated_data['receiver'] = receiver
         validated_data['sender'] = self.context['request'].user
-        return super().create(validated_data)
+       # Create the message
+        message = super().create(validated_data)
+
+        # ✨ Send real-time notification to recipient
+        notify_new_message(
+            to_user_id=receiver.id,
+            message_data={
+                'id': message.id,
+                'sender': {
+                    'id': message.sender.id,
+                    'username': message.sender.username
+                },
+                'content': message.content,
+                'created_at': message.created_at.isoformat()
+            }
+        )
+
+        return message
 
 
 class ConversationSerializer(serializers.Serializer):

@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
 from .models import FriendRequest, Friendship
+from notifications.utils import notify_friend_request, notify_friend_accepted
 
 
 @api_view(['GET'])
@@ -84,10 +85,19 @@ def send_request(request, user_id):
     if Friendship.objects.filter(user=from_user, friend=to_user).exists():
         return Response({'error': 'You are already friends'}, status=status.HTTP_400_BAD_REQUEST)
 
-    FriendRequest.objects.create(
+    # Create the friend request
+    friend_request = FriendRequest.objects.create(
         from_user=from_user,
         to_user=to_user
     )
+
+    #  Send real-time notification to recipient
+    notify_friend_request(
+        to_user_id=to_user.id,
+        from_user=from_user,
+        request_id=friend_request.id
+    )
+
 
     return Response({'message': 'Friend request sent'}, status=status.HTTP_201_CREATED)
  
@@ -109,18 +119,27 @@ def accept_request(request, request_id):
     if fr.to_user != user:
         return Response({'error': 'Not authorized'}, status=status.HTTP_403_FORBIDDEN)
 
-    Friendship.objects.create(user=user, friend=fr.from_user)
-    Friendship.objects.create(user=fr.from_user, friend=user)
+    # Store the original sender before deleting the request
+    original_sender = fr.from_user
+
+    Friendship.objects.create(user=user, friend=original_sender)
+    Friendship.objects.create(user=original_sender, friend=user)
 
     fr.delete()
+
+    # Send real-time notification to original sender
+    notify_friend_accepted(
+        to_user_id=original_sender.id,
+        friend=user  # The person who accepted
+    )
 
     return Response({
         'message': 'Friend request accepted',
         'friend': {
-            'id': fr.from_user.id,
-            'username': fr.from_user.username,
-            'first_name': fr.from_user.first_name,
-            'last_name': fr.from_user.last_name
+            'id': original_sender.id,
+            'username': original_sender.username,
+            'first_name': original_sender.first_name,
+            'last_name': original_sender.last_name
         }
     }, status=status.HTTP_201_CREATED)
 

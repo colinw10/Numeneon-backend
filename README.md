@@ -49,17 +49,18 @@ See [docs/features/RiverTimeline.md](./docs/features/RiverTimeline.md) for the f
 
 ## ✨ Key Features
 
-| Feature                  | Description                                                          |
-| ------------------------ | -------------------------------------------------------------------- |
-| **River Timeline**       | Three-column feed with epoch-based grouping and carousel navigation  |
-| **Profile Flip Card**    | Dual-sided card — profile info on front, analytics dashboard on back |
-| **Engagement Analytics** | Wave chart + GitHub-style activity heatmap                           |
-| **Direct Messaging**     | Real-time DMs with conversation list                                 |
-| **User Navigation**      | Click any avatar/username to view their profile                      |
-| **Card User Headers**    | Every card shows who posted it (avatar + username inside)            |
-| **Mobile Category Tabs** | Tab-based navigation for mobile (Thoughts/Media/Milestones)          |
-| **Search Modal**         | Search users and posts globally                                      |
-| **Theme Toggle**         | Dark mode (cyberpunk) / Light mode (clean)                           |
+| Feature                     | Description                                                            |
+| --------------------------- | ---------------------------------------------------------------------- |
+| **River Timeline**          | Three-column feed with epoch-based grouping and carousel navigation    |
+| **Profile Flip Card**       | Dual-sided card — profile info on front, analytics dashboard on back   |
+| **Engagement Analytics**    | Wave chart + GitHub-style activity heatmap                             |
+| **Direct Messaging**        | Real-time DMs with conversation list                                   |
+| **WebSocket Notifications** | Real-time notifications for friend requests, acceptances, and messages |
+| **User Navigation**         | Click any avatar/username to view their profile                        |
+| **Card User Headers**       | Every card shows who posted it (avatar + username inside)              |
+| **Mobile Category Tabs**    | Tab-based navigation for mobile (Thoughts/Media/Milestones)            |
+| **Search Modal**            | Search users and posts globally                                        |
+| **Theme Toggle**            | Dark mode (cyberpunk) / Light mode (clean)                             |
 
 ---
 
@@ -155,11 +156,12 @@ numeneon/
 
 ## 🛠️ Tech Stack
 
-| Layer    | Tech                                          |
-| -------- | --------------------------------------------- |
-| Frontend | React 18, Vite, React Router, SCSS            |
-| Backend  | Django 4.x, Django REST Framework, Simple JWT |
-| Database | SQLite (dev), PostgreSQL (prod)               |
+| Layer     | Tech                                          |
+| --------- | --------------------------------------------- |
+| Frontend  | React 18, Vite, React Router, SCSS            |
+| Backend   | Django 4.x, Django REST Framework, Simple JWT |
+| Database  | SQLite (dev), PostgreSQL (prod)               |
+| Real-time | Django Channels, Daphne (ASGI), WebSockets    |
 
 ---
 

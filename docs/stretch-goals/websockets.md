@@ -14,7 +14,7 @@
 - NotificationConsumer handling connections
 - Real-time events emitting from:
   - `POST /api/friends/request/{id}/` → `friend_request` event
-  - `POST /api/friends/accept/{id}/` → `friend_accepted` event  
+  - `POST /api/friends/accept/{id}/` → `friend_accepted` event
   - `POST /api/messages/` → `new_message` event
 - WebSocket endpoint: `ws://localhost:8000/ws/notifications/?token=<jwt>`
 
