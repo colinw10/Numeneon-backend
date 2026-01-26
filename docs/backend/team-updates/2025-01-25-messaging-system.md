@@ -32,18 +32,21 @@ The messaging system and user search are now working locally.
 ## 🧪 Test It Locally
 
 ### Start the backend:
+
 ```bash
 cd backend
 python manage.py runserver
 ```
 
 ### Start the frontend (in another terminal):
+
 ```bash
 cd frontend/frontend
 npm run dev
 ```
 
 ### Try it out:
+
 1. Go to http://localhost:5173
 2. Login with: `pablo@test.com` / `test123`
 3. Click the **search icon** (🔍) → Search for "tito" or "natalia"
@@ -55,10 +58,10 @@ npm run dev
 
 Everything is already deployed!
 
-| What | URL |
-|------|-----|
-| **Frontend** | https://numeneon-frontend.vercel.app |
-| **Backend API** | https://numeneon-backend.onrender.com/api/ |
+| What            | URL                                          |
+| --------------- | -------------------------------------------- |
+| **Frontend**    | https://numeneon-frontend.vercel.app         |
+| **Backend API** | https://numeneon-backend.onrender.com/api/   |
 | **Admin Panel** | https://numeneon-backend.onrender.com/admin/ |
 
 ---
@@ -69,15 +72,16 @@ Everything is already deployed!
 
 **Backend:** `backend/messages_app/`
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/messages/conversations/` | List all your conversations |
-| GET | `/api/messages/conversation/?user_id=X` | Get messages with user X |
-| POST | `/api/messages/` | Send a message `{ receiver_id, content }` |
-| PATCH | `/api/messages/{id}/read/` | Mark message as read |
-| PATCH | `/api/messages/read_all/?user_id=X` | Mark all from user X as read |
+| Method | Endpoint                                | Description                               |
+| ------ | --------------------------------------- | ----------------------------------------- |
+| GET    | `/api/messages/conversations/`          | List all your conversations               |
+| GET    | `/api/messages/conversation/?user_id=X` | Get messages with user X                  |
+| POST   | `/api/messages/`                        | Send a message `{ receiver_id, content }` |
+| PATCH  | `/api/messages/{id}/read/`              | Mark message as read                      |
+| PATCH  | `/api/messages/read_all/?user_id=X`     | Mark all from user X as read              |
 
 **Frontend:**
+
 - `frontend/src/services/messagesService.js` - API calls
 - `frontend/src/contexts/MessageContext.jsx` - Global state
 - `frontend/src/components/MessageModal/` - Chat UI

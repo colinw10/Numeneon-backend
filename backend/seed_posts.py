@@ -15,13 +15,16 @@ print('Clearing existing posts...')
 Post.objects.all().delete()  # NEW: Removes ALL posts from database
 
 # Create friend users if they don't exist
+# NOTE: Using different emails than build.sh team accounts to avoid duplicates!
+# Team logins use: natalia@test.com, colin@test.com, crystal@test.com
+# Seed users use: nataliap@seed.com, colinw@seed.com, crystalr@seed.com
 friend_users = [
     {'username': 'pabloPistola', 'email': 'pablo@test.com', 'first_name': 'Pablo', 'last_name': 'Cordero'},
-    {'username': 'titod', 'email': 'tito@test.com', 'first_name': 'Tito', 'last_name': 'Del Valle'},
-    {'username': 'arthurb', 'email': 'arthur@test.com', 'first_name': 'Arthur', 'last_name': 'Brown'},
-    {'username': 'nataliap', 'email': 'natalia@test.com', 'first_name': 'Natalia', 'last_name': 'Perez'},
-    {'username': 'colinw', 'email': 'colin@test.com', 'first_name': 'Colin', 'last_name': 'Wang'},
-    {'username': 'crystalr', 'email': 'crystal@test.com', 'first_name': 'Crystal', 'last_name': 'Rivera'},
+    {'username': 'titod', 'email': 'tito@seed.com', 'first_name': 'Tito', 'last_name': 'Del Valle'},
+    {'username': 'arthurb', 'email': 'arthur@seed.com', 'first_name': 'Arthur', 'last_name': 'Brown'},
+    {'username': 'nataliap', 'email': 'nataliap@seed.com', 'first_name': 'Natalia', 'last_name': 'Perez'},
+    {'username': 'colinw', 'email': 'colinw@seed.com', 'first_name': 'Colin', 'last_name': 'Wang'},
+    {'username': 'crystalr', 'email': 'crystalr@seed.com', 'first_name': 'Crystal', 'last_name': 'Rivera'},
 ]
 
 print('Creating friend users...')
