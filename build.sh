@@ -25,6 +25,8 @@ team_users = [
     {'username': 'natalia', 'email': 'natalia@test.com', 'password': 'test123', 'first_name': 'Natalia', 'last_name': 'Test'},
     {'username': 'crystal', 'email': 'crystal@test.com', 'password': 'test123', 'first_name': 'Crystal', 'last_name': 'Test'},
     {'username': 'colin', 'email': 'colin@test.com', 'password': 'test123', 'first_name': 'Colin', 'last_name': 'Test'},
+    {'username': 'arthurb', 'email': 'arthur@test.com', 'password': 'test123', 'first_name': 'Arthur', 'last_name': 'Brown'},
+    {'username': 'titod', 'email': 'tito@test.com', 'password': 'test123', 'first_name': 'Tito', 'last_name': 'Delgado'},
 ]
 
 for u in team_users:
