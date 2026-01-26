@@ -1,9 +1,28 @@
 # Stretch Goal: Real-Time WebSockets
 
-> **Status:** ✅ Implementation Guide Available!
-> **Current Implementation:** Polling (every 30 seconds)
+> **Status:** ✅ **BACKEND IMPLEMENTED!**  
+> **Date Completed:** January 26, 2026  
+> **Current Frontend:** Polling (every 30 seconds) - WebSocket integration pending
 >
 > **📚 Full Implementation Guide:** See [/docs/websockets/README.md](../websockets/README.md)
+
+## ✅ What's Done (Backend)
+
+- Django Channels installed and configured
+- Daphne ASGI server running
+- JWT authentication middleware for WebSockets
+- NotificationConsumer handling connections
+- Real-time events emitting from:
+  - `POST /api/friends/request/{id}/` → `friend_request` event
+  - `POST /api/friends/accept/{id}/` → `friend_accepted` event  
+  - `POST /api/messages/` → `new_message` event
+- WebSocket endpoint: `ws://localhost:8000/ws/notifications/?token=<jwt>`
+
+## ⏳ What's Left (Frontend)
+
+- Create WebSocket service in React
+- Add notification context/provider
+- Connect to `wss://` in production
 
 ---
 
