@@ -6,20 +6,20 @@
 
 ## 🌐 Live URLs
 
-| Component | Platform | URL |
-|-----------|----------|-----|
-| **Frontend** | Vercel | https://numeneon-frontend.vercel.app |
-| **Backend** | Render | https://numeneon-backend.onrender.com |
-| **Admin Panel** | Render | https://numeneon-backend.onrender.com/admin/ |
-| **Database** | PostgreSQL (Render) | Internal connection |
+| Component       | Platform            | URL                                          |
+| --------------- | ------------------- | -------------------------------------------- |
+| **Frontend**    | Vercel              | https://numeneon-frontend.vercel.app         |
+| **Backend**     | Render              | https://numeneon-backend.onrender.com        |
+| **Admin Panel** | Render              | https://numeneon-backend.onrender.com/admin/ |
+| **Database**    | PostgreSQL (Render) | Internal connection                          |
 
 ---
 
 ## 📁 Docs in this folder
 
-| File | What it covers |
-|------|----------------|
-| [test-accounts.md](test-accounts.md) | Login credentials, seed data users |
+| File                                           | What it covers                                |
+| ---------------------------------------------- | --------------------------------------------- |
+| [test-accounts.md](test-accounts.md)           | Login credentials, seed data users            |
 | [cors-configuration.md](cors-configuration.md) | CORS/CSRF troubleshooting for Vercel ↔ Render |
 
 ---
@@ -47,12 +47,12 @@
 
 ### Environment Differences
 
-| Setting | Development | Production |
-|---------|-------------|------------|
-| CORS | `localhost:5173` | `numeneon-frontend.vercel.app` + regex for previews |
-| DEBUG | `True` | `False` |
-| Database | Local SQLite/PostgreSQL | Render PostgreSQL |
-| CSRF | Middleware disabled | Middleware disabled (JWT-only API) |
+| Setting  | Development             | Production                                          |
+| -------- | ----------------------- | --------------------------------------------------- |
+| CORS     | `localhost:5173`        | `numeneon-frontend.vercel.app` + regex for previews |
+| DEBUG    | `True`                  | `False`                                             |
+| Database | Local SQLite/PostgreSQL | Render PostgreSQL                                   |
+| CSRF     | Middleware disabled     | Middleware disabled (JWT-only API)                  |
 
 ### Git Remotes
 
