@@ -51,5 +51,7 @@ for u in team_users:
 "
 
 # Run seed scripts to populate sample data (standalone scripts, not manage.py commands)
+# seed_posts.py already clears existing posts before seeding
 python seed_posts.py || echo "seed_posts.py failed"
-python manage.py seed_messages || echo "seed_messages not available or failed"
+# --clear flag removes existing messages before seeding to prevent duplicates
+python manage.py seed_messages --clear || echo "seed_messages not available or failed"
