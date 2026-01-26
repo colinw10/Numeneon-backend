@@ -30,6 +30,7 @@ ALLOWED_HOSTS = [
 # INSTALLED_APPS - Django apps/plugins (like Express middleware & route modules)
 # Add your custom apps here (e.g., 'api', 'users', 'posts')
 INSTALLED_APPS = [
+    'daphne', # ASGI server for WebSocket support
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',  # Serves static files (like express.static())
     # Third-party apps
     'rest_framework',
+     'channels',
     'rest_framework_simplejwt',  # JWT authentication
     'corsheaders',  # <-- Added for CORS
     # Custom apps
@@ -45,6 +47,7 @@ INSTALLED_APPS = [
     'posts',
     'friends',
     'messages_app',  # Direct messaging
+    'notifications',
 ]
 
 # MIDDLEWARE - Request/response pipeline (exactly like Express app.use() chain)
@@ -81,6 +84,7 @@ TEMPLATES = [
 
 # WSGI server config (like http.createServer() in Node)
 WSGI_APPLICATION = 'numeneon.wsgi.application'
+ASGI_APPLICATION = 'numeneon.asgi.application' # For WebSocket support
 
 # DATABASE - Connection config
 import os
@@ -160,4 +164,10 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
+}
+# Channels (WebSocket) configuration
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
 }
