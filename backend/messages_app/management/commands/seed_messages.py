@@ -30,6 +30,7 @@ class Command(BaseCommand):
 
         # Define all conversations as list of tuples
         # (sender_username, receiver_username, content, is_read)
+        # NOTE: Using actual usernames from database (team accounts + seed users)
         conversations = [
             # Conversation 1: arthurb ↔ pabloPistola
             ('arthurb', 'pabloPistola', 'Knock-knock', True),
@@ -37,20 +38,20 @@ class Command(BaseCommand):
             ('arthurb', 'pabloPistola', 'Damn', True),
             ('arthurb', 'pabloPistola', 'You still there?', False),
 
-            # Conversation 2: nataliap ↔ pabloPistola
-            ('nataliap', 'pabloPistola', "I don't know how I feel about this", True),
-            ('pabloPistola', 'nataliap', "I don't feel anything", False),
-            ('nataliap', 'pabloPistola', 'Hello??', False),
-            ('nataliap', 'pabloPistola', 'Answer me!', False),
+            # Conversation 2: natalia ↔ pabloPistola (team account)
+            ('natalia', 'pabloPistola', "I don't know how I feel about this", True),
+            ('pabloPistola', 'natalia', "I don't feel anything", False),
+            ('natalia', 'pabloPistola', 'Hello??', False),
+            ('natalia', 'pabloPistola', 'Answer me!', False),
 
-            # Conversation 3: colinw ↔ pabloPistola
-            ('colinw', 'pabloPistola', 'What do you think?', True),
-            ('pabloPistola', 'colinw', "You don't wanna know", False),
-            ('colinw', 'pabloPistola', 'Bro?', True),
+            # Conversation 3: colin ↔ pabloPistola (team account)
+            ('colin', 'pabloPistola', 'What do you think?', True),
+            ('pabloPistola', 'colin', "You don't wanna know", False),
+            ('colin', 'pabloPistola', 'Bro?', True),
 
-            # Conversation 4: crystalr ↔ pabloPistola
-            ('crystalr', 'pabloPistola', "So, I think I have some typo's", False),
-            ('pabloPistola', 'crystalr', 'I have dyslexia', False),
+            # Conversation 4: crystal ↔ pabloPistola (team account)
+            ('crystal', 'pabloPistola', "So, I think I have some typo's", False),
+            ('pabloPistola', 'crystal', 'I have dyslexia', False),
 
             # Conversation 5: titod ↔ pabloPistola
             ('titod', 'pabloPistola', 'Yo!', True),

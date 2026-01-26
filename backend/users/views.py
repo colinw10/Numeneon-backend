@@ -218,24 +218,29 @@ def search_users(request):
     Returns up to 20 matching users (excludes current user).
     
     Query params:
-    - q: search query (minimum 2 characters)
+    - q: search query (optional - if empty or < 2 chars, returns suggested users)
     
     Example: GET /api/auth/search/?q=pablo
+    Example: GET /api/auth/search/  (returns suggested users)
     """
     from django.db.models import Q
     
     query = request.GET.get('q', '').strip()
     
-    # Require at least 2 characters to search
+    # If no query or < 2 chars, return suggested users (most recent, excluding admin)
     if len(query) < 2:
-        return Response([])
-    
-    # Search by username, first_name, or last_name (case-insensitive)
-    users = User.objects.filter(
-        Q(username__icontains=query) |
-        Q(first_name__icontains=query) |
-        Q(last_name__icontains=query)
-    ).exclude(id=request.user.id)[:20]  # Exclude self, limit to 20
+        users = User.objects.exclude(
+            id=request.user.id
+        ).exclude(
+            is_superuser=True  # Exclude admin
+        ).order_by('-date_joined')[:20]
+    else:
+        # Search by username, first_name, or last_name (case-insensitive)
+        users = User.objects.filter(
+            Q(username__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query)
+        ).exclude(id=request.user.id)[:20]  # Exclude self, limit to 20
     
     # Build response with profile data
     results = []
