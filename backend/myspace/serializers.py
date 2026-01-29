@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import MySpaceProfile, PlaylistSong
-from .deezer_utils import get_deezer_preview_url
+from .deezer_utils import get_preview_url
 
 
 class PlaylistSongSerializer(serializers.ModelSerializer):
@@ -8,7 +8,7 @@ class PlaylistSongSerializer(serializers.ModelSerializer):
     # Converts milliseconds (180000) to readable format ("3:00")
     duration = serializers.CharField(source='duration_formatted', read_only=True)
     
-    # Fresh preview URL fetched from Deezer API
+    # Fresh preview URL fetched from iTunes (primary) or Deezer (fallback)
     preview_url = serializers.SerializerMethodField()
 
     class Meta:
@@ -24,7 +24,7 @@ class PlaylistSongSerializer(serializers.ModelSerializer):
             'duration',        # Human-readable ("3:00")
             'duration_ms',     # Raw milliseconds (180000)
             'external_id',     # Spotify/Deezer track ID
-            'preview_url',     # 30-second preview URL (fetched fresh from Deezer)
+            'preview_url',     # 30-second preview URL (fetched fresh)
             'album_art',       # Album cover image URL
             'order',           # Playlist position (0, 1, 2...)
         ]
@@ -34,15 +34,14 @@ class PlaylistSongSerializer(serializers.ModelSerializer):
     
     def get_preview_url(self, obj):
         """
-        Fetch fresh preview URL from Deezer API.
-        Deezer preview URLs contain signed tokens that expire,
-        so we fetch them fresh each time.
+        Fetch fresh preview URL from iTunes (primary) or Deezer (fallback).
+        iTunes URLs are stable and don't expire like Deezer's signed tokens.
         """
-        if obj.external_id and obj.external_id.startswith('deezer:'):
-            fresh_url = get_deezer_preview_url(obj.external_id)
-            if fresh_url:
-                return fresh_url
-        # Fallback to stored URL
+        # Try to get fresh URL from iTunes/Deezer
+        fresh_url = get_preview_url(obj.title, obj.artist, obj.external_id)
+        if fresh_url:
+            return fresh_url
+        # Fallback to stored URL (SoundHelix samples)
         return obj.preview_url
 
 
