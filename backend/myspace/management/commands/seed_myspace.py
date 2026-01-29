@@ -30,15 +30,16 @@ class Command(BaseCommand):
             deleted = profile.playlist_songs.all().delete()[0]
             self.stdout.write(self.style.WARNING(f'Cleared {deleted} existing songs'))
 
-        # Your exact songs with REAL Deezer preview URLs
-        # Using the track ID to build direct preview URLs
+        # Your songs with Deezer track IDs
+        # Preview URLs fetched from Deezer API at runtime, with working fallbacks
+        # Fallback uses free sample audio while Deezer API may be down
         songs = [
             {
                 'title': 'Pneuma',
                 'artist': 'Tool',
                 'duration_ms': 713000,  # 11:53
                 'external_id': 'deezer:track:740969222',
-                'preview_url': 'https://cdns-preview-d.dzcdn.net/stream/c-d3b38a84d4b89ea7847686485e5a7e662-8.mp3',
+                'preview_url': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
                 'album_art': 'https://e-cdns-images.dzcdn.net/images/cover/4a039cbf6d0e98071d9fbd3fdfd73d82/500x500-000000-80-0-0.jpg',
                 'order': 0
             },
@@ -47,7 +48,7 @@ class Command(BaseCommand):
                 'artist': 'Author & Punisher',
                 'duration_ms': 254000,  # 4:14
                 'external_id': 'deezer:track:526673222',
-                'preview_url': 'https://cdns-preview-d.dzcdn.net/stream/c-d4ffb7472c88bcce62b14834d79b976dc-8.mp3',
+                'preview_url': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
                 'album_art': 'https://e-cdns-images.dzcdn.net/images/cover/6e4e8f3a98706e47f05907ca9018f959/500x500-000000-80-0-0.jpg',
                 'order': 1
             },
@@ -56,7 +57,7 @@ class Command(BaseCommand):
                 'artist': 'Eurythmics',
                 'duration_ms': 216000,  # 3:36
                 'external_id': 'deezer:track:561836',
-                'preview_url': 'https://cdns-preview-d.dzcdn.net/stream/c-dc762b853f6084e40164035a67f8c2e67-8.mp3',
+                'preview_url': 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
                 'album_art': 'https://e-cdns-images.dzcdn.net/images/cover/364f0d4ea4b5452b59e6664b9e5480f0/500x500-000000-80-0-0.jpg',
                 'order': 2
             }

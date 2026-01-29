@@ -7,6 +7,9 @@ import json
 import urllib.request
 import urllib.error
 from typing import Optional
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_deezer_preview_url(track_id: str) -> Optional[str]:
@@ -25,12 +28,23 @@ def get_deezer_preview_url(track_id: str) -> Optional[str]:
     
     try:
         url = f'https://api.deezer.com/track/{track_id}'
-        with urllib.request.urlopen(url, timeout=5) as response:
+        req = urllib.request.Request(
+            url,
+            headers={'User-Agent': 'Mozilla/5.0 (compatible; Numeneon/1.0)'}
+        )
+        with urllib.request.urlopen(req, timeout=10) as response:
             if response.status == 200:
                 data = json.loads(response.read().decode('utf-8'))
-                return data.get('preview')
-    except (urllib.error.URLError, json.JSONDecodeError, TimeoutError):
-        pass
+                preview = data.get('preview')
+                if preview:
+                    logger.info(f"Fetched preview URL for track {track_id}")
+                    return preview
+    except urllib.error.HTTPError as e:
+        logger.warning(f"Deezer API HTTP error for track {track_id}: {e.code}")
+    except urllib.error.URLError as e:
+        logger.warning(f"Deezer API URL error for track {track_id}: {e.reason}")
+    except (json.JSONDecodeError, TimeoutError) as e:
+        logger.warning(f"Deezer API error for track {track_id}: {e}")
     
     return None
 
@@ -46,7 +60,11 @@ def get_deezer_track_info(track_id: str) -> dict:
     
     try:
         url = f'https://api.deezer.com/track/{track_id}'
-        with urllib.request.urlopen(url, timeout=5) as response:
+        req = urllib.request.Request(
+            url,
+            headers={'User-Agent': 'Mozilla/5.0 (compatible; Numeneon/1.0)'}
+        )
+        with urllib.request.urlopen(req, timeout=10) as response:
             if response.status == 200:
                 data = json.loads(response.read().decode('utf-8'))
                 return {
@@ -56,7 +74,7 @@ def get_deezer_track_info(track_id: str) -> dict:
                     'duration_ms': data.get('duration', 0) * 1000,
                     'album_art': data.get('album', {}).get('cover_big'),
                 }
-    except (urllib.error.URLError, json.JSONDecodeError, TimeoutError):
-        pass
+    except (urllib.error.URLError, urllib.error.HTTPError, json.JSONDecodeError, TimeoutError) as e:
+        logger.warning(f"Deezer API error for track {track_id}: {e}")
     
     return {}
