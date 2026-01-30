@@ -5,6 +5,7 @@
 ## The Goal
 
 When Pablo posts something:
+
 1. All Pablo's friends receive a WebSocket notification
 2. Their feed can update in real-time (optional frontend implementation)
 3. Works even if friend is on a different Render worker (requires Redis)
@@ -57,13 +58,13 @@ class PostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # Save the post
         post = serializer.save(author=self.request.user)
-        
+
         # Get all friends (Friendship model is directional)
         friendships = Friendship.objects.filter(user=self.request.user)
-        
+
         # Serialize post data for notification
         post_data = PostSerializer(post).data
-        
+
         # Notify each friend
         for friendship in friendships:
             notify_new_post(friendship.friend.id, post_data)
@@ -83,6 +84,7 @@ class Friendship(models.Model):
 ```
 
 When two users become friends, **two records are created**:
+
 ```
 | id | user_id | friend_id |
 |----|---------|-----------|
@@ -123,24 +125,24 @@ The frontend needs to handle the `new_post` type in the WebSocket listener:
 // Example WebSocket handler
 websocket.onmessage = (event) => {
   const message = JSON.parse(event.data);
-  
-  switch(message.type) {
-    case 'new_message':
+
+  switch (message.type) {
+    case "new_message":
       // Handle new DM
       break;
-    case 'friend_request':
+    case "friend_request":
       // Handle friend request
       break;
-    case 'friend_accepted':
+    case "friend_accepted":
       // Handle friend accepted
       break;
-    case 'new_post':
+    case "new_post":
       // Handle new post from friend
       // Option 1: Show notification toast
       showToast(`${message.data.author.username} posted something!`);
       // Option 2: Add to feed if on feed page
       if (onFeedPage) {
-        setPosts(prev => [message.data, ...prev]);
+        setPosts((prev) => [message.data, ...prev]);
       }
       break;
   }
@@ -162,11 +164,11 @@ websocket.onmessage = (event) => {
 
 ## Files Changed
 
-| File | Change |
-|------|--------|
-| `backend/notifications/utils.py` | Added `notify_new_post` function |
-| `backend/notifications/consumers.py` | Added `new_post` handler |
-| `backend/posts/views.py` | Updated `perform_create` to notify friends |
+| File                                 | Change                                     |
+| ------------------------------------ | ------------------------------------------ |
+| `backend/notifications/utils.py`     | Added `notify_new_post` function           |
+| `backend/notifications/consumers.py` | Added `new_post` handler                   |
+| `backend/posts/views.py`             | Updated `perform_create` to notify friends |
 
 ## Future Improvements
 

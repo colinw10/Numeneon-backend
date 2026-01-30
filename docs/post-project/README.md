@@ -7,12 +7,12 @@ This folder documents all the fixes, debugging, and learnings from deploying Num
 
 ## Contents
 
-| File | Description |
-|------|-------------|
-| [01-websocket-production-fix.md](01-websocket-production-fix.md) | WebSocket/Redis fix for multi-worker deployment |
-| [02-wall-posts-persistence.md](02-wall-posts-persistence.md) | target_profile field for wall posts |
-| [03-post-notifications.md](03-post-notifications.md) | Real-time notifications when friends post |
-| [04-debugging-techniques.md](04-debugging-techniques.md) | Tools and techniques used to debug production issues |
+| File                                                             | Description                                          |
+| ---------------------------------------------------------------- | ---------------------------------------------------- |
+| [01-websocket-production-fix.md](01-websocket-production-fix.md) | WebSocket/Redis fix for multi-worker deployment      |
+| [02-wall-posts-persistence.md](02-wall-posts-persistence.md)     | target_profile field for wall posts                  |
+| [03-post-notifications.md](03-post-notifications.md)             | Real-time notifications when friends post            |
+| [04-debugging-techniques.md](04-debugging-techniques.md)         | Tools and techniques used to debug production issues |
 
 ## Key Takeaways
 

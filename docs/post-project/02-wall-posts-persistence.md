@@ -5,6 +5,7 @@
 ## The Issue
 
 When posting on another user's profile:
+
 1. Post appears immediately ✅
 2. Refresh page → Post disappears ❌
 3. Only posts on your OWN profile persist
@@ -12,6 +13,7 @@ When posting on another user's profile:
 ## Root Cause
 
 The `target_profile` field existed in the database, but:
+
 1. Serializer wasn't accepting `target_profile_id` from frontend
 2. Serializer wasn't returning `target_profile` in responses
 
@@ -43,7 +45,7 @@ Backend saves:
 
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
-    
+
     # Wall posts: if set, this post appears on target_profile's wall
     target_profile = models.ForeignKey(
         User,
@@ -65,7 +67,7 @@ from django.contrib.auth.models import User
 class PostSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     target_profile = UserSerializer(read_only=True)  # ← Returns full user object
-    
+
     # Accept target_profile_id from frontend
     target_profile_id = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(),
@@ -74,7 +76,7 @@ class PostSerializer(serializers.ModelSerializer):
         required=False,
         allow_null=True,
     )
-    
+
     class Meta:
         model = Post
         fields = [
@@ -104,6 +106,7 @@ target_profile_id = serializers.PrimaryKeyRelatedField(
 ```
 
 **How it works:**
+
 1. Frontend sends `target_profile_id: 5`
 2. DRF looks up `User.objects.get(id=5)`
 3. If found, saves it to `post.target_profile`
@@ -143,10 +146,11 @@ The frontend filters posts for a profile page:
 
 ```javascript
 // Profile.jsx
-const profilePosts = posts.filter(p => 
-  p.author?.username === profileUser?.username ||        // Own posts
-  p.target_profile?.id === profileUser?.id ||            // Wall posts by ID
-  p.target_profile?.username === profileUser?.username   // Wall posts by username
+const profilePosts = posts.filter(
+  (p) =>
+    p.author?.username === profileUser?.username || // Own posts
+    p.target_profile?.id === profileUser?.id || // Wall posts by ID
+    p.target_profile?.username === profileUser?.username, // Wall posts by username
 );
 ```
 

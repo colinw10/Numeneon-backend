@@ -14,16 +14,17 @@ The admin panel is your window into the production database.
 
 ### What to Check
 
-| Section | What It Tells You |
-|---------|-------------------|
-| **Messages** | Are messages being saved? Who sent what? |
-| **Posts** | Is `target_profile` being set on wall posts? |
-| **Users** | Do the user IDs match what frontend is sending? |
-| **Friendships** | Are friend relationships created properly? |
+| Section         | What It Tells You                               |
+| --------------- | ----------------------------------------------- |
+| **Messages**    | Are messages being saved? Who sent what?        |
+| **Posts**       | Is `target_profile` being set on wall posts?    |
+| **Users**       | Do the user IDs match what frontend is sending? |
+| **Friendships** | Are friend relationships created properly?      |
 
 ### Quick Verification
 
 If frontend says "I sent a message" but you don't see it in admin:
+
 - ❌ **Backend isn't receiving the request**, OR
 - ❌ **Backend is receiving but not saving**
 
@@ -43,14 +44,14 @@ def debug_messages(request):
     user_messages = Message.objects.filter(
         Q(sender=user) | Q(receiver=user)
     ).count()
-    
+
     sent = Message.objects.filter(sender=user).values(
         'receiver__username', 'content', 'created_at'
     )[:10]
     received = Message.objects.filter(receiver=user).values(
         'sender__username', 'content', 'created_at'
     )[:10]
-    
+
     return Response({
         'total_messages_in_db': total_messages,
         'user_messages': user_messages,
@@ -98,14 +99,14 @@ Before blaming backend, verify what frontend is sending:
 
 ### Common Findings
 
-| Status | Meaning | Fix |
-|--------|---------|-----|
-| 201 | Success | Backend saved it |
-| 400 | Bad request | Check payload format |
-| 401 | Unauthorized | Token expired? |
-| 404 | Not found | Wrong URL |
-| 405 | Method not allowed | Wrong HTTP method |
-| 500 | Server error | Check Render logs |
+| Status | Meaning            | Fix                  |
+| ------ | ------------------ | -------------------- |
+| 201    | Success            | Backend saved it     |
+| 400    | Bad request        | Check payload format |
+| 401    | Unauthorized       | Token expired?       |
+| 404    | Not found          | Wrong URL            |
+| 405    | Method not allowed | Wrong HTTP method    |
+| 500    | Server error       | Check Render logs    |
 
 ## Technique 5: Test with Postman/cURL
 
@@ -144,8 +145,8 @@ On Render, you can connect to PostgreSQL:
 SELECT * FROM messages_app_message ORDER BY created_at DESC LIMIT 10;
 
 -- Check if target_profile is being saved
-SELECT id, author_id, target_profile_id, content 
-FROM posts_post 
+SELECT id, author_id, target_profile_id, content
+FROM posts_post
 WHERE target_profile_id IS NOT NULL;
 ```
 
@@ -180,14 +181,14 @@ When something doesn't work in production:
 
 ## Common Production Issues
 
-| Symptom | Likely Cause |
-|---------|--------------|
+| Symptom                        | Likely Cause                             |
+| ------------------------------ | ---------------------------------------- |
 | Works locally, fails on Render | Environment variables, CORS, or database |
-| Data disappears on refresh | Not being saved (check serializer) |
-| WebSocket notifications fail | InMemoryChannelLayer, need Redis |
-| 500 errors | Check Render logs for traceback |
-| "Not found" on API | URL mismatch, trailing slash |
-| Auth fails | Token expired, CORS blocking |
+| Data disappears on refresh     | Not being saved (check serializer)       |
+| WebSocket notifications fail   | InMemoryChannelLayer, need Redis         |
+| 500 errors                     | Check Render logs for traceback          |
+| "Not found" on API             | URL mismatch, trailing slash             |
+| Auth fails                     | Token expired, CORS blocking             |
 
 ## Cleanup
 

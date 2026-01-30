@@ -24,7 +24,15 @@ class PostViewSet(viewsets.ModelViewSet):
 
             username = self.request.query_params.get("username")
             if username:
-                qs = qs.filter(author__username=username)
+                # Profile page: show user's own posts AND posts on their wall
+                from django.db.models import Q
+                qs = qs.filter(
+                    Q(author__username=username, target_profile__isnull=True) |  # Their own posts (not wall posts)
+                    Q(target_profile__username=username)  # Posts on their wall
+                )
+            else:
+                # Main feed: exclude wall posts (only show regular posts)
+                qs = qs.filter(target_profile__isnull=True)
 
         return qs
 

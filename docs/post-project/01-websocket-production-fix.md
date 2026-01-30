@@ -7,6 +7,7 @@
 When deployed to Render, WebSocket notifications (messages, friend requests) weren't reaching users.
 
 ### Symptoms
+
 - Could send messages via REST API
 - Messages saved to database
 - But recipients never received real-time notifications
@@ -26,6 +27,7 @@ CHANNEL_LAYERS = {
 ```
 
 **Why this fails on Render:**
+
 - Render runs multiple workers (processes) for your app
 - `InMemoryChannelLayer` stores messages in RAM of one process
 - If User A connects to Worker 1 and User B to Worker 2...
@@ -83,11 +85,13 @@ Worker 1                   Redis                    Worker 2
 ## Files Changed
 
 **backend/numeneon/settings.py:**
+
 - Added conditional CHANNEL_LAYERS configuration
 
 ## Dependencies
 
 Already in `requirements.txt`:
+
 ```
 channels==4.0.0
 channels_redis==4.2.0
@@ -96,17 +100,17 @@ daphne==4.1.0
 
 ## Environment Variables
 
-| Key | Value | Where |
-|-----|-------|-------|
+| Key         | Value                           | Where                          |
+| ----------- | ------------------------------- | ------------------------------ |
 | `REDIS_URL` | `redis://...` or `rediss://...` | Render Dashboard → Environment |
 
 ## Redis Options
 
-| Provider | Cost | Notes |
-|----------|------|-------|
-| **Upstash** | Free tier (10K commands/day) | Recommended for small projects |
-| **Render Redis** | ~$7/month | Easier setup, same platform |
-| **Redis Cloud** | Free tier available | More features |
+| Provider         | Cost                         | Notes                          |
+| ---------------- | ---------------------------- | ------------------------------ |
+| **Upstash**      | Free tier (10K commands/day) | Recommended for small projects |
+| **Render Redis** | ~$7/month                    | Easier setup, same platform    |
+| **Redis Cloud**  | Free tier available          | More features                  |
 
 ## How to Set Up Upstash (Free)
 
