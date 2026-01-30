@@ -80,3 +80,14 @@ def notify_new_message(to_user_id, message_data):
         message_data: Serialized message data
     """
     notify_user(to_user_id, 'new_message', message_data)
+
+
+def notify_new_post(to_user_id, post_data):
+    """
+    Send a new post notification to a friend.
+
+    Args:
+        to_user_id: ID of user to notify (a friend)
+        post_data: Serialized post data
+    """
+    notify_user(to_user_id, 'new_post', post_data)

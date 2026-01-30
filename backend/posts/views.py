@@ -7,6 +7,8 @@ from rest_framework.response import Response
 
 from .models import Post, Like
 from .serializers import PostSerializer
+from friends.models import Friendship
+from notifications.utils import notify_new_post
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -27,7 +29,14 @@ class PostViewSet(viewsets.ModelViewSet):
         return qs
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        post = serializer.save(author=self.request.user)
+        
+        # Notify all friends about the new post
+        friendships = Friendship.objects.filter(user=self.request.user)
+        post_data = PostSerializer(post).data
+        
+        for friendship in friendships:
+            notify_new_post(friendship.friend.id, post_data)
 
     @action(detail=True, methods=["get"])
     def replies(self, request, pk=None):

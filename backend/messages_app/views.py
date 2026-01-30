@@ -6,6 +6,9 @@ from django.contrib.auth.models import User
 from django.db.models import Q, Max, Count
 from .models import Message
 from .serializers import MessageSerializer, ConversationSerializer
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class MessageListCreateView(generics.ListCreateAPIView):
@@ -21,6 +24,12 @@ class MessageListCreateView(generics.ListCreateAPIView):
         return Message.objects.filter(
             Q(sender=user) | Q(receiver=user)
         ).select_related('sender', 'receiver')
+
+    def create(self, request, *args, **kwargs):
+        logger.info(f"Message create request from user {request.user.id}: {request.data}")
+        response = super().create(request, *args, **kwargs)
+        logger.info(f"Message created successfully: {response.data}")
+        return response
 
 
 class ConversationView(generics.ListAPIView):
@@ -112,3 +121,28 @@ def mark_as_read(request, user_id):
     ).update(is_read=True)
     
     return Response({'marked_read': updated})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def debug_messages(request):
+    """
+    Debug endpoint to check all messages for current user.
+    """
+    user = request.user
+    total_messages = Message.objects.count()
+    user_messages = Message.objects.filter(
+        Q(sender=user) | Q(receiver=user)
+    ).count()
+    
+    sent = Message.objects.filter(sender=user).values('receiver__username', 'content', 'created_at')[:10]
+    received = Message.objects.filter(receiver=user).values('sender__username', 'content', 'created_at')[:10]
+    
+    return Response({
+        'total_messages_in_db': total_messages,
+        'user_messages': user_messages,
+        'user_id': user.id,
+        'username': user.username,
+        'recent_sent': list(sent),
+        'recent_received': list(received),
+    })

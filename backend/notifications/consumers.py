@@ -107,3 +107,10 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             'type': 'new_message',
             'data': event['data']
         }))
+
+    async def new_post(self, event):
+        """Handler for new post notifications (from friends)."""
+        await self.send(text_data=json.dumps({
+            'type': 'new_post',
+            'data': event['data']
+        }))
