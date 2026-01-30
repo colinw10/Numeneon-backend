@@ -5,6 +5,7 @@ from users.serializers import UserSerializer
 
 class PostSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
+    target_profile = UserSerializer(read_only=True)
 
     reply_count = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()

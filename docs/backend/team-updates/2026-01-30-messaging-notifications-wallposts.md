@@ -82,24 +82,24 @@ def create(self, validated_data):
 
 These were fixed by the frontend team:
 
-| Issue | Fix |
-|-------|-----|
-| Messages not sending | Changed `recieverId` → `receiver_id` (typo) |
-| WebSocket using localhost in prod | Updated to use Render URL when deployed |
+| Issue                             | Fix                                         |
+| --------------------------------- | ------------------------------------------- |
+| Messages not sending              | Changed `recieverId` → `receiver_id` (typo) |
+| WebSocket using localhost in prod | Updated to use Render URL when deployed     |
 
 ---
 
 ## Files Changed
 
-| File | Change |
-|------|--------|
-| `backend/numeneon/settings.py` | Use Redis for WebSocket channels in production |
-| `backend/posts/models.py` | Added `target_profile` field (already existed) |
-| `backend/posts/serializers.py` | Handle `target_profile_id` in create |
-| `backend/posts/views.py` | Notify friends when a post is created |
-| `backend/notifications/utils.py` | Added `notify_new_post` function |
-| `backend/notifications/consumers.py` | Added `new_post` WebSocket handler |
-| `.gitignore` | Added `venv_new/` |
+| File                                 | Change                                         |
+| ------------------------------------ | ---------------------------------------------- |
+| `backend/numeneon/settings.py`       | Use Redis for WebSocket channels in production |
+| `backend/posts/models.py`            | Added `target_profile` field (already existed) |
+| `backend/posts/serializers.py`       | Handle `target_profile_id` in create           |
+| `backend/posts/views.py`             | Notify friends when a post is created          |
+| `backend/notifications/utils.py`     | Added `notify_new_post` function               |
+| `backend/notifications/consumers.py` | Added `new_post` WebSocket handler             |
+| `.gitignore`                         | Added `venv_new/`                              |
 
 ---
 
@@ -116,11 +116,11 @@ from notifications.utils import notify_new_post
 
 def perform_create(self, serializer):
     post = serializer.save(author=self.request.user)
-    
+
     # Notify all friends about the new post
     friendships = Friendship.objects.filter(user=self.request.user)
     post_data = PostSerializer(post).data
-    
+
     for friendship in friendships:
         notify_new_post(friendship.friend.id, post_data)
 ```
@@ -133,11 +133,12 @@ Added `notify_new_post` to `notifications/utils.py` and `new_post` handler to `n
 
 ## Environment Variables Needed (Render)
 
-| Key | Description |
-|-----|-------------|
+| Key         | Description                                      |
+| ----------- | ------------------------------------------------ |
 | `REDIS_URL` | Redis connection URL for WebSocket notifications |
 
 **Options for Redis:**
+
 - Render Redis (~$7/month)
 - Upstash Redis (free tier available)
 
