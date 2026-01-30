@@ -4,17 +4,30 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+import logging
 
 from .models import Post, Like
 from .serializers import PostSerializer
 from friends.models import Friendship
 from notifications.utils import notify_new_post
 
+logger = logging.getLogger(__name__)
+
 
 class PostViewSet(viewsets.ModelViewSet):
  
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        logger.info(f"Post create request: {request.data}")
+        try:
+            response = super().create(request, *args, **kwargs)
+            logger.info(f"Post created successfully: {response.data}")
+            return response
+        except Exception as e:
+            logger.error(f"Post creation failed: {e}", exc_info=True)
+            raise
 
     def get_queryset(self):
         qs = Post.objects.all()
