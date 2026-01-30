@@ -17,6 +17,14 @@ class Post(models.Model):
         on_delete=models.CASCADE,
         related_name="posts",
     )
+    # Wall posts: if set, this post appears on target_profile's wall
+    target_profile = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="wall_posts",
+        null=True,
+        blank=True,
+    )
     type = models.CharField(max_length=20, choices=POST_TYPES, default="thoughts")
 
     # Allow blank so media-only posts are possible
