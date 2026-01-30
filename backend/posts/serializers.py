@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Post, Like
 from users.serializers import UserSerializer
+from django.contrib.auth.models import User
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -19,7 +20,9 @@ class PostSerializer(serializers.ModelSerializer):
     )
 
     # Wall posts: ID of user whose wall this post should appear on
-    target_profile_id = serializers.IntegerField(
+    target_profile_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
+        source='target_profile',
         write_only=True,
         required=False,
         allow_null=True,
@@ -63,13 +66,5 @@ class PostSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return Like.objects.filter(user=request.user, post=obj).exists()
         return False
-
-    def create(self, validated_data):
-        # Handle target_profile_id
-        target_profile_id = validated_data.pop('target_profile_id', None)
-        if target_profile_id:
-            from django.contrib.auth.models import User
-            validated_data['target_profile'] = User.objects.get(id=target_profile_id)
-        return super().create(validated_data)
 
 
