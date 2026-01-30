@@ -44,19 +44,20 @@ class MessageSerializer(serializers.ModelSerializer):
         
         logger.info(f"Message created with id: {message.id}")
 
-        # ✨ Send real-time notification to recipient
-        notify_new_message(
-            to_user_id=receiver.id,
-            message_data={
-                'id': message.id,
-                'sender': {
-                    'id': message.sender.id,
-                    'username': message.sender.username
-                },
-                'content': message.content,
-                'created_at': message.created_at.isoformat()
-            }
-        )
+        # ✨ Send real-time notification to recipient (but not to yourself!)
+        if receiver.id != message.sender.id:
+            notify_new_message(
+                to_user_id=receiver.id,
+                message_data={
+                    'id': message.id,
+                    'sender': {
+                        'id': message.sender.id,
+                        'username': message.sender.username
+                    },
+                    'content': message.content,
+                    'created_at': message.created_at.isoformat()
+                }
+            )
 
         return message
 
