@@ -210,6 +210,46 @@ def current_user(request):
     })
 
 
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def update_profile(request):
+    """
+    Update the current user's profile (bio, location, website).
+    
+    PATCH /api/auth/profile/
+    Body: { "bio": "...", "location": "...", "website": "..." }
+    
+    All fields are optional - only updates what's provided.
+    """
+    user = request.user
+    
+    # Get or create profile
+    profile, created = Profile.objects.get_or_create(user=user)
+    
+    # Update only the fields that are provided
+    data = request.data
+    if 'bio' in data:
+        profile.bio = data['bio']
+    if 'location' in data:
+        profile.location = data['location']
+    if 'website' in data:
+        profile.website = data['website']
+    if 'avatar' in data:
+        profile.avatar = data['avatar']
+    
+    profile.save()
+    
+    # Return updated user data (same format as /me/)
+    return Response({
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'profile': ProfileSerializer(profile).data
+    })
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def search_users(request):
