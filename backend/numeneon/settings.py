@@ -36,6 +36,9 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
 ]
 
+# Trust X-Forwarded-Proto header from Render's proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # INSTALLED_APPS - Django apps/plugins (like Express middleware & route modules)
 # Add your custom apps here (e.g., 'api', 'users', 'posts')
 INSTALLED_APPS = [
