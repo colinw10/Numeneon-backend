@@ -52,17 +52,31 @@ class PostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         post = serializer.save(author=self.request.user)
         
-        # Notify all friends about the new post
         try:
-            friendships = Friendship.objects.filter(user=self.request.user)
             post_data = PostSerializer(post, context={'request': self.request}).data
             
-            for friendship in friendships:
-                notify_new_post(friendship.friend.id, post_data)
+            # If this is a wall post, notify the wall owner
+            if post.target_profile and post.target_profile != self.request.user:
+                from notifications.utils import notify_user
+                notify_user(
+                    post.target_profile.id,
+                    'wall_post',
+                    {
+                        'message': f'{self.request.user.username} posted on your wall',
+                        'post': post_data,
+                        'author': {
+                            'id': self.request.user.id,
+                            'username': self.request.user.username
+                        }
+                    }
+                )
+            else:
+                # Regular post: notify all friends
+                friendships = Friendship.objects.filter(user=self.request.user)
+                for friendship in friendships:
+                    notify_new_post(friendship.friend.id, post_data)
         except Exception as e:
             # Don't fail the post creation if notifications fail
-            import logging
-            logger = logging.getLogger(__name__)
             logger.error(f"Failed to send post notifications: {e}")
 
     @action(detail=True, methods=["get"])
