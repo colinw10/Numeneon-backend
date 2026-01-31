@@ -182,11 +182,25 @@ SIMPLE_JWT = {
 # Use Redis in production, InMemory for local development
 import os
 if os.environ.get('REDIS_URL'):
+    # Render Redis requires SSL
+    import ssl
+    ssl_context = ssl.create_default_context()
+    ssl_context.check_hostname = False
+    ssl_context.verify_mode = ssl.CERT_NONE
+    
+    redis_url = os.environ.get('REDIS_URL')
+    # Convert redis:// to rediss:// for SSL if needed
+    if redis_url.startswith('redis://'):
+        redis_url = redis_url.replace('redis://', 'rediss://', 1)
+    
     CHANNEL_LAYERS = {
         'default': {
             'BACKEND': 'channels_redis.core.RedisChannelLayer',
             'CONFIG': {
-                'hosts': [os.environ.get('REDIS_URL')],
+                'hosts': [{
+                    'address': redis_url,
+                    'ssl': ssl_context,
+                }],
             },
         },
     }
