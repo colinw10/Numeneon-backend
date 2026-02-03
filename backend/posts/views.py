@@ -9,7 +9,7 @@ import logging
 from .models import Post, Like
 from .serializers import PostSerializer
 from friends.models import Friendship
-from notifications.utils import notify_new_post
+from notifications.utils import notify_new_post, notify_post_comment
 
 logger = logging.getLogger(__name__)
 
@@ -55,8 +55,17 @@ class PostViewSet(viewsets.ModelViewSet):
         try:
             post_data = PostSerializer(post, context={'request': self.request}).data
             
+            # If this is a reply/comment, notify the original post author
+            if post.parent and post.parent.author != self.request.user:
+                parent_data = PostSerializer(post.parent, context={'request': self.request}).data
+                notify_post_comment(
+                    post.parent.author.id,
+                    self.request.user,
+                    parent_data,
+                    post_data
+                )
             # If this is a wall post, notify the wall owner
-            if post.target_profile and post.target_profile != self.request.user:
+            elif post.target_profile and post.target_profile != self.request.user:
                 from notifications.utils import notify_user
                 notify_user(
                     post.target_profile.id,
@@ -70,8 +79,8 @@ class PostViewSet(viewsets.ModelViewSet):
                         }
                     }
                 )
-            else:
-                # Regular post: notify all friends
+            elif not post.parent:
+                # Regular post (not a reply): notify all friends
                 friendships = Friendship.objects.filter(user=self.request.user)
                 for friendship in friendships:
                     notify_new_post(friendship.friend.id, post_data)

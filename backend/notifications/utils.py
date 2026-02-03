@@ -106,3 +106,26 @@ def notify_new_post(to_user_id, post_data):
         post_data: Serialized post data
     """
     notify_user(to_user_id, 'new_post', post_data)
+
+
+def notify_post_comment(to_user_id, commenter, post_data, comment_data):
+    """
+    Send a notification when someone comments on a post.
+
+    Args:
+        to_user_id: ID of the post author to notify
+        commenter: User object who made the comment
+        post_data: Serialized original post data
+        comment_data: Serialized comment/reply data
+    """
+    notify_user(to_user_id, 'post_comment', {
+        'message': f'{commenter.username} commented on your post',
+        'commenter': {
+            'id': commenter.id,
+            'username': commenter.username,
+            'first_name': commenter.first_name,
+            'last_name': commenter.last_name,
+        },
+        'post': post_data,
+        'comment': comment_data,
+    })

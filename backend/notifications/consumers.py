@@ -121,3 +121,10 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             'type': 'wall_post',
             'data': event['data']
         }))
+
+    async def post_comment(self, event):
+        """Handler for post comment notifications (someone commented on your post)."""
+        await self.send(text_data=json.dumps({
+            'type': 'post_comment',
+            'data': event['data']
+        }))
