@@ -50,7 +50,8 @@ class Post(models.Model):
     shares_count = models.IntegerField(default=0)
 
     class Meta:
-        ordering = ["-created_at"]
+        # Order by newest first, with -id as tiebreaker for posts with identical timestamps
+        ordering = ["-created_at", "-id"]
 
     def __str__(self) -> str:
         preview = (self.content or "").strip()
