@@ -1,0 +1,10 @@
+asgiref==3.11.0
+certifi==2025.11.12
+distlib==0.4.0
+Django==5.2.10
+filelock==3.20.0
+packaging==25.0
+pipenv==2025.0.4
+platformdirs==4.5.0
+sqlparse==0.5.5
+virtualenv==20.35.4
