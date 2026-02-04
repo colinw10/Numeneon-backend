@@ -42,6 +42,24 @@ class Post(models.Model):
         related_name="replies",
     )
 
+    # Reply to specific comment (for threaded replies)
+    reply_to_comment = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="comment_replies",
+    )
+
+    # Mentioned user in a reply (for @mentions)
+    mentioned_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="mentions",
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -178,10 +178,19 @@ Uses `DefaultRouter` with `PostViewSet` - auto-generates CRUD routes.
 #### POST `/api/posts/`
 
 ```json
-// Request
+// Request - Basic post
 {
   "content": "My first post!",
   "type": "thoughts"
+}
+
+// Request - Comment reply with @mention
+{
+  "content": "@username your reply here...",
+  "parent_id": 123,
+  "mentioned_user_id": 456,
+  "mentioned_username": "username",
+  "reply_to_comment_id": 789
 }
 
 // Response (201 Created)

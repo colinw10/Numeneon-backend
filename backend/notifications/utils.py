@@ -129,3 +129,33 @@ def notify_post_comment(to_user_id, commenter, post_data, comment_data):
         'post': post_data,
         'comment': comment_data,
     })
+
+
+def notify_comment_reply(to_user_id, replier, reply_data, post_id, mentioned_username):
+    """
+    Send a notification when someone replies to a comment with @mention.
+
+    Args:
+        to_user_id: ID of the mentioned user to notify
+        replier: User object who made the reply
+        reply_data: Serialized reply data
+        post_id: ID of the original post
+        mentioned_username: Username that was mentioned
+    """
+    notify_user(to_user_id, 'comment_reply', {
+        'message': f'{replier.username} replied to your comment',
+        'replier': {
+            'id': replier.id,
+            'username': replier.username,
+            'first_name': replier.first_name,
+            'last_name': replier.last_name,
+        },
+        'reply': {
+            'content': reply_data.get('content', ''),
+            'id': reply_data.get('id'),
+        },
+        'post': {
+            'id': post_id,
+        },
+        'mentioned_username': mentioned_username,
+    })

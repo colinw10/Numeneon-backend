@@ -9,7 +9,7 @@ import logging
 from .models import Post, Like
 from .serializers import PostSerializer
 from friends.models import Friendship
-from notifications.utils import notify_new_post, notify_post_comment
+from notifications.utils import notify_new_post, notify_post_comment, notify_comment_reply
 
 logger = logging.getLogger(__name__)
 
@@ -50,13 +50,25 @@ class PostViewSet(viewsets.ModelViewSet):
         return qs
 
     def perform_create(self, serializer):
+        # Get mentioned_username from request data before saving
+        mentioned_username = self.request.data.get('mentioned_username', '')
+        
         post = serializer.save(author=self.request.user)
         
         try:
             post_data = PostSerializer(post, context={'request': self.request}).data
             
+            # If this is a reply to a specific comment with @mention, send comment_reply notification
+            if post.reply_to_comment and post.mentioned_user and post.mentioned_user != self.request.user:
+                notify_comment_reply(
+                    post.mentioned_user.id,
+                    self.request.user,
+                    post_data,
+                    post.parent.id if post.parent else None,
+                    mentioned_username or post.mentioned_user.username
+                )
             # If this is a reply/comment, notify the original post author
-            if post.parent and post.parent.author != self.request.user:
+            elif post.parent and post.parent.author != self.request.user:
                 parent_data = PostSerializer(post.parent, context={'request': self.request}).data
                 notify_post_comment(
                     post.parent.author.id,

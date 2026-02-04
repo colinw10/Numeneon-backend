@@ -128,3 +128,10 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             'type': 'post_comment',
             'data': event['data']
         }))
+
+    async def comment_reply(self, event):
+        """Handler for comment reply notifications (someone replied to your comment with @mention)."""
+        await self.send(text_data=json.dumps({
+            'type': 'comment_reply',
+            'data': event['data']
+        }))
