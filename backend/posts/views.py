@@ -55,6 +55,11 @@ class PostViewSet(viewsets.ModelViewSet):
         
         post = serializer.save(author=self.request.user)
         
+        # Increment comment_count on parent post if this is a reply/comment
+        if post.parent:
+            post.parent.comment_count += 1
+            post.parent.save(update_fields=['comment_count'])
+        
         try:
             post_data = PostSerializer(post, context={'request': self.request}).data
             
