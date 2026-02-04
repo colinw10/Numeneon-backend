@@ -109,9 +109,16 @@ class ProfileSerializer(serializers.ModelSerializer):
     # This is "Nesting". We tell Django: "When you show a Profile, 
     # use the UserSerializer logic to show the owner's details too."
     user = UserSerializer(read_only=True)
+    # Return null instead of empty string when no avatar is set
+    avatar = serializers.SerializerMethodField()
+
     class Meta:
         model = Profile
         # specify fields to include in serialized output
         fields = ['id', 'user', 'bio', 'avatar', 'location', 'website', 'created_at', 'updated_at']
         # specify fields that are read-only and user cannot modify
         read_only_fields = ['created_at', 'updated_at']
+
+    def get_avatar(self, obj):
+        """Return avatar URL or None if not set (empty string counts as not set)"""
+        return obj.avatar if obj.avatar else None
