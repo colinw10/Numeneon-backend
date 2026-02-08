@@ -114,20 +114,45 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def like(self, request, pk=None):
+        """Toggle like - or use 'action' param: 'like' or 'unlike' to force state"""
         post = self.get_object()
         user = request.user
+        
+        # Check for explicit action to prevent race conditions on mobile
+        action_type = request.data.get('action')  # 'like' or 'unlike'
 
         existing = Like.objects.filter(user=user, post=post).first()
-        if existing:
-            existing.delete()
-            post.likes_count = max(0, post.likes_count - 1)
+        
+        if action_type == 'like':
+            # Explicit like - only create if doesn't exist
+            if not existing:
+                Like.objects.create(user=user, post=post)
+                post.likes_count += 1
+                post.save()
+            is_liked = True
+        elif action_type == 'unlike':
+            # Explicit unlike - only delete if exists
+            if existing:
+                existing.delete()
+                post.likes_count = max(0, post.likes_count - 1)
+                post.save()
+            is_liked = False
         else:
-            Like.objects.create(user=user, post=post)
-            post.likes_count += 1
+            # Toggle behavior (original)
+            if existing:
+                existing.delete()
+                post.likes_count = max(0, post.likes_count - 1)
+                is_liked = False
+            else:
+                Like.objects.create(user=user, post=post)
+                post.likes_count += 1
+                is_liked = True
+            post.save()
 
-        post.save()
         serializer = self.get_serializer(post)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        response_data = serializer.data
+        response_data['is_liked'] = is_liked  # Ensure current state is returned
+        return Response(response_data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=["post"])
     def share(self, request, pk=None):

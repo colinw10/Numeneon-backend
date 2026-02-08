@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     'friends',
     'messages_app',  # Direct messaging
     'notifications',
-    'myspace',
+    'mystudio',
 ]
 
 # MIDDLEWARE - Request/response pipeline (exactly like Express app.use() chain)
