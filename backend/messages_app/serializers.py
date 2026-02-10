@@ -23,26 +23,41 @@ class MessageSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'sender', 'created_at']
 
     def create(self, validated_data):
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"MessageSerializer.create called with: {validated_data}")
+        
         receiver_id = validated_data.pop('receiver_id')
-        receiver = User.objects.get(id=receiver_id)
+        try:
+            receiver = User.objects.get(id=receiver_id)
+        except User.DoesNotExist:
+            logger.error(f"User with id {receiver_id} does not exist")
+            raise
+            
         validated_data['receiver'] = receiver
         validated_data['sender'] = self.context['request'].user
-       # Create the message
+        
+        logger.info(f"Creating message from {validated_data['sender']} to {receiver}")
+        
+        # Create the message
         message = super().create(validated_data)
+        
+        logger.info(f"Message created with id: {message.id}")
 
-        # ✨ Send real-time notification to recipient
-        notify_new_message(
-            to_user_id=receiver.id,
-            message_data={
-                'id': message.id,
-                'sender': {
-                    'id': message.sender.id,
-                    'username': message.sender.username
-                },
-                'content': message.content,
-                'created_at': message.created_at.isoformat()
-            }
-        )
+        # ✨ Send real-time notification to recipient (but not to yourself!)
+        if receiver.id != message.sender.id:
+            notify_new_message(
+                to_user_id=receiver.id,
+                message_data={
+                    'id': message.id,
+                    'sender': {
+                        'id': message.sender.id,
+                        'username': message.sender.username
+                    },
+                    'content': message.content,
+                    'created_at': message.created_at.isoformat()
+                }
+            )
 
         return message
 

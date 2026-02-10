@@ -17,6 +17,14 @@ class Post(models.Model):
         on_delete=models.CASCADE,
         related_name="posts",
     )
+    # Wall posts: if set, this post appears on target_profile's wall
+    target_profile = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="wall_posts",
+        null=True,
+        blank=True,
+    )
     type = models.CharField(max_length=20, choices=POST_TYPES, default="thoughts")
 
     # Allow blank so media-only posts are possible
@@ -34,6 +42,24 @@ class Post(models.Model):
         related_name="replies",
     )
 
+    # Reply to specific comment (for threaded replies)
+    reply_to_comment = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="comment_replies",
+    )
+
+    # Mentioned user in a reply (for @mentions)
+    mentioned_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="mentions",
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -42,7 +68,8 @@ class Post(models.Model):
     shares_count = models.IntegerField(default=0)
 
     class Meta:
-        ordering = ["-created_at"]
+        # Order by newest first, with -id as tiebreaker for posts with identical timestamps
+        ordering = ["-created_at", "-id"]
 
     def __str__(self) -> str:
         preview = (self.content or "").strip()

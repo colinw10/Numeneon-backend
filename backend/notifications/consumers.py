@@ -107,3 +107,31 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             'type': 'new_message',
             'data': event['data']
         }))
+
+    async def new_post(self, event):
+        """Handler for new post notifications (from friends)."""
+        await self.send(text_data=json.dumps({
+            'type': 'new_post',
+            'data': event['data']
+        }))
+
+    async def wall_post(self, event):
+        """Handler for wall post notifications (someone posted on your wall)."""
+        await self.send(text_data=json.dumps({
+            'type': 'wall_post',
+            'data': event['data']
+        }))
+
+    async def post_comment(self, event):
+        """Handler for post comment notifications (someone commented on your post)."""
+        await self.send(text_data=json.dumps({
+            'type': 'post_comment',
+            'data': event['data']
+        }))
+
+    async def comment_reply(self, event):
+        """Handler for comment reply notifications (someone replied to your comment with @mention)."""
+        await self.send(text_data=json.dumps({
+            'type': 'comment_reply',
+            'data': event['data']
+        }))

@@ -16,4 +16,7 @@ urlpatterns = [
     
     # POST mark messages from user as read (path param version)
     path('conversation/<int:user_id>/read/', views.mark_as_read, name='mark-as-read'),
+    
+    # DEBUG: Check messages in database
+    path('debug/', views.debug_messages, name='debug-messages'),
 ]

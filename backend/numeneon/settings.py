@@ -25,7 +25,19 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'numeneon-backend.onrender.com',
     '.onrender.com',  # Allow all Render subdomains
+    '.vercel.app',  # Allow Vercel frontend for WebSocket connections
 ]
+
+# CSRF trusted origins for Django admin and form submissions
+CSRF_TRUSTED_ORIGINS = [
+    'https://numeneon-backend.onrender.com',
+    'http://numeneon-backend.onrender.com',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
+
+# Trust X-Forwarded-Proto header from Render's proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # INSTALLED_APPS - Django apps/plugins (like Express middleware & route modules)
 # Add your custom apps here (e.g., 'api', 'users', 'posts')
@@ -48,6 +60,7 @@ INSTALLED_APPS = [
     'friends',
     'messages_app',  # Direct messaging
     'notifications',
+    'myspace',
 ]
 
 # MIDDLEWARE - Request/response pipeline (exactly like Express app.use() chain)
@@ -136,13 +149,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     'https://numeneon-frontend.vercel.app',
     'https://numeneon-backend.onrender.com',
-    'http://localhost:5173',  # Vite dev server
-    'http://localhost:3000',  # React dev server
 ]
-# Allow Vercel preview deployments (random URLs like numeneon-frontend-abc123-user.vercel.app)
+# Allow any localhost port for development
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://numeneon-frontend.*\.vercel\.app$",
     r"^https://numeneon-frontend-.*\.vercel\.app$",
+    r"^http://localhost:\d+$",  # Any localhost port
+    r"^http://127\.0\.0\.1:\d+$",  # Any 127.0.0.1 port
 ]
 # JWT goes in Authorization header, not cookies - no credentials needed
 CORS_ALLOW_CREDENTIALS = False
@@ -166,8 +179,25 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 # Channels (WebSocket) configuration
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
-    },
-}
+# Use Redis in production, InMemory for local development
+import os
+if os.environ.get('REDIS_URL'):
+    redis_url = os.environ.get('REDIS_URL')
+    # Convert redis:// to rediss:// for SSL if needed
+    if redis_url.startswith('redis://') and 'render.com' in redis_url:
+        redis_url = redis_url.replace('redis://', 'rediss://', 1)
+    
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [redis_url],
+            },
+        },
+    }
+else:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        },
+    }

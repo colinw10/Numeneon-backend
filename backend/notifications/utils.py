@@ -9,6 +9,9 @@ Usage in views:
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def notify_user(user_id, notification_type, data):
@@ -20,17 +23,29 @@ def notify_user(user_id, notification_type, data):
         notification_type: Type of notification (e.g., 'friend_request', 'new_message')
         data: Dictionary containing notification data
     """
-    channel_layer = get_channel_layer()
-    group_name = f'user_{user_id}'
+    try:
+        channel_layer = get_channel_layer()
+        logger.info(f"notify_user called: user_id={user_id}, type={notification_type}, channel_layer={type(channel_layer)}")
+        
+        if channel_layer is None:
+            logger.warning("Channel layer is None, skipping notification")
+            return
+            
+        group_name = f'user_{user_id}'
+        logger.info(f"Sending to group: {group_name}")
 
-    # Send message to the user's group
-    async_to_sync(channel_layer.group_send)(
-        group_name,
-        {
-            'type': notification_type.replace('-', '_'),
-            'data': data
-        }
-    )
+        # Send message to the user's group
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                'type': notification_type.replace('-', '_'),
+                'data': data
+            }
+        )
+        logger.info(f"Notification sent successfully to {group_name}")
+    except Exception as e:
+        logger.error(f"Failed to send notification: {e}", exc_info=True)
+        # Don't re-raise - notifications should not break the main request
 
 
 def notify_friend_request(to_user_id, from_user, request_id):
@@ -80,3 +95,67 @@ def notify_new_message(to_user_id, message_data):
         message_data: Serialized message data
     """
     notify_user(to_user_id, 'new_message', message_data)
+
+
+def notify_new_post(to_user_id, post_data):
+    """
+    Send a new post notification to a friend.
+
+    Args:
+        to_user_id: ID of user to notify (a friend)
+        post_data: Serialized post data
+    """
+    notify_user(to_user_id, 'new_post', post_data)
+
+
+def notify_post_comment(to_user_id, commenter, post_data, comment_data):
+    """
+    Send a notification when someone comments on a post.
+
+    Args:
+        to_user_id: ID of the post author to notify
+        commenter: User object who made the comment
+        post_data: Serialized original post data
+        comment_data: Serialized comment/reply data
+    """
+    notify_user(to_user_id, 'post_comment', {
+        'message': f'{commenter.username} commented on your post',
+        'commenter': {
+            'id': commenter.id,
+            'username': commenter.username,
+            'first_name': commenter.first_name,
+            'last_name': commenter.last_name,
+        },
+        'post': post_data,
+        'comment': comment_data,
+    })
+
+
+def notify_comment_reply(to_user_id, replier, reply_data, post_id, mentioned_username):
+    """
+    Send a notification when someone replies to a comment with @mention.
+
+    Args:
+        to_user_id: ID of the mentioned user to notify
+        replier: User object who made the reply
+        reply_data: Serialized reply data
+        post_id: ID of the original post
+        mentioned_username: Username that was mentioned
+    """
+    notify_user(to_user_id, 'comment_reply', {
+        'message': f'{replier.username} replied to your comment',
+        'replier': {
+            'id': replier.id,
+            'username': replier.username,
+            'first_name': replier.first_name,
+            'last_name': replier.last_name,
+        },
+        'reply': {
+            'content': reply_data.get('content', ''),
+            'id': reply_data.get('id'),
+        },
+        'post': {
+            'id': post_id,
+        },
+        'mentioned_username': mentioned_username,
+    })
