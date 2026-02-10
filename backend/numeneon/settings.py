@@ -201,3 +201,19 @@ else:
             'BACKEND': 'channels.layers.InMemoryChannelLayer',
         },
     }
+
+# =============================================================================
+# PUSH NOTIFICATIONS (Web Push / VAPID)
+# =============================================================================
+# Generate VAPID keys once using: 
+#   python -c "from py_vapid import Vapid; v = Vapid(); v.generate_keys(); print('Private:', v.private_key.to_pem().decode()); print('Public:', v.public_key.to_pem_uncompressed().decode())"
+# Or use: npx web-push generate-vapid-keys
+#
+# Store these as environment variables (NEVER commit private key!)
+# VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY
+#
+VAPID_PUBLIC_KEY = os.environ.get('VAPID_PUBLIC_KEY', '')
+VAPID_PRIVATE_KEY = os.environ.get('VAPID_PRIVATE_KEY', '')
+VAPID_CLAIMS = {
+    'sub': 'mailto:admin@numeneon.com'  # Contact email for push service
+}

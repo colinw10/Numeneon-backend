@@ -40,6 +40,9 @@ urlpatterns = [
     
     # MYSTUDIO
     path('api/mystudio/', include('mystudio.urls')),
+    
+    # Push Notifications
+    path('api/notifications/', include('notifications.urls')),
 ]
 
 # Serve media files in development
