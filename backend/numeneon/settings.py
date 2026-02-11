@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'messages_app',  # Direct messaging
     'notifications',
     'mystudio',
+    'stories',  # Instagram-style stories
 ]
 
 # MIDDLEWARE - Request/response pipeline (exactly like Express app.use() chain)

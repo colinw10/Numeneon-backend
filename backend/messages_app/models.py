@@ -11,6 +11,8 @@ class Message(models.Model):
     """
     Message model for direct messaging between users.
     Each message has a sender, receiver, content, and read status.
+    
+    Optional: Can include a reply_to_story reference for story replies.
     """
     sender = models.ForeignKey(
         User,
@@ -25,6 +27,15 @@ class Message(models.Model):
     content = models.TextField()
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    # Optional: Link message to a story (for "Replied to your story" feature)
+    reply_to_story = models.ForeignKey(
+        'stories.Story',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='replies'
+    )
 
     class Meta:
         ordering = ['created_at']

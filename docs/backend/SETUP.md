@@ -378,7 +378,129 @@ python manage.py shell -c "from notifications.models import PushSubscription; pr
 
 ---
 
-## �🚀 Deployment (Render)
+## 📸 Stories Feature (NEW)
+
+Instagram-style stories that expire after 24 hours. Users can upload images/videos, view friends' stories, and react with heart or thunder.
+
+### Setup After Pulling
+
+```bash
+cd backend
+python manage.py makemigrations stories
+python manage.py migrate
+```
+
+### Stories API Endpoints
+
+All endpoints require authentication (`Authorization: Bearer <token>`)
+
+| Method | Endpoint                       | Description                      |
+| ------ | ------------------------------ | -------------------------------- |
+| GET    | `/api/stories/`                | Get stories from friends         |
+| POST   | `/api/stories/`                | Create a new story               |
+| GET    | `/api/stories/me/`             | Get your own stories             |
+| GET    | `/api/stories/user/<id>/`      | Get stories by specific user     |
+| DELETE | `/api/stories/<uuid>/`         | Delete your story                |
+| POST   | `/api/stories/<uuid>/view/`    | Mark story as viewed             |
+| POST   | `/api/stories/<uuid>/react/`   | Add/update reaction (heart/thunder) |
+| DELETE | `/api/stories/<uuid>/react/`   | Remove your reaction             |
+
+### Create Story (POST `/api/stories/`)
+
+Media should be uploaded to Cloudinary first, then send the URL.
+
+**Request Body:**
+```json
+{
+  "media_url": "https://res.cloudinary.com/...",
+  "media_type": "image",
+  "caption": "Hello world!"
+}
+```
+
+**Response:**
+```json
+{
+  "id": "uuid-here",
+  "user": {
+    "id": 1,
+    "username": "johndoe",
+    "profile_picture": "https://..."
+  },
+  "media_url": "https://res.cloudinary.com/...",
+  "media_type": "image",
+  "caption": "Hello world!",
+  "created_at": "2026-02-10T12:00:00Z",
+  "expires_at": "2026-02-11T12:00:00Z"
+}
+```
+
+### Get Stories (GET `/api/stories/`)
+
+Returns non-expired stories from friends (and self), grouped for frontend display.
+
+**Response:**
+```json
+{
+  "stories": [
+    {
+      "id": "uuid",
+      "user": { "id": 1, "username": "johndoe", "profile_picture": "..." },
+      "media_url": "https://...",
+      "media_type": "image",
+      "caption": "Hello!",
+      "created_at": "2026-02-10T12:00:00Z",
+      "expires_at": "2026-02-11T12:00:00Z",
+      "view_count": 15,
+      "is_viewed": false,
+      "my_reaction": null,
+      "heart_count": 3,
+      "thunder_count": 1
+    }
+  ]
+}
+```
+
+### React to Story (POST `/api/stories/<uuid>/react/`)
+
+**Request Body:**
+```json
+{
+  "reaction_type": "heart"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "reaction_type": "heart",
+  "heart_count": 4,
+  "thunder_count": 1
+}
+```
+
+### Cleanup Expired Stories
+
+Stories automatically expire after 24 hours but remain in the database. Run cleanup periodically:
+
+```bash
+python manage.py cleanup_expired_stories
+```
+
+**Dry run (preview what will be deleted):**
+```bash
+python manage.py cleanup_expired_stories --dry-run
+```
+
+For production, set up a cron job or Render scheduled task:
+```bash
+0 * * * * cd /path/to/project && python manage.py cleanup_expired_stories
+```
+
+---
+
+## 🚀 Deployment (Render)
 
 A `build.sh` script is included for Render deployment:
 

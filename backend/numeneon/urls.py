@@ -43,6 +43,9 @@ urlpatterns = [
     
     # Push Notifications
     path('api/notifications/', include('notifications.urls')),
+    
+    # Stories (24-hour expiring posts)
+    path('api/stories/', include('stories.urls')),
 ]
 
 # Serve media files in development
