@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view, permission_classes
@@ -157,3 +158,27 @@ def search_users(request):
         results.append(user_data)
     
     return Response(results)
+
+
+# Get user by username - public endpoint for viewing any user's basic info
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_user_by_username(request, username):
+    user = get_object_or_404(User, username=username)
+    
+    # Get profile_picture from profile's avatar field
+    profile_picture = None
+    try:
+        if user.profile and user.profile.avatar:
+            profile_picture = user.profile.avatar
+    except Profile.DoesNotExist:
+        pass
+    
+    return Response({
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'profile_picture': profile_picture,
+    })

@@ -38,4 +38,5 @@ urlpatterns = [
     path('me/', views.current_user, name='current_user'),
     path('profile/', views.update_profile, name='update_profile'),
     path('search/', views.search_users, name='search_users'),
+    path('users/<str:username>/', views.get_user_by_username, name='get_user_by_username'),
 ]
