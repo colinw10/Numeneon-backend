@@ -99,10 +99,21 @@ class EmailLoginSerializer(serializers.Serializer):
 # Model-based Serializers (automatic control)
 # using ModelSerializer because we are serializing Django models directly
 class UserSerializer(serializers.ModelSerializer):
+    profile_picture = serializers.SerializerMethodField()
+    
     class Meta:
         model = User
         # specify fields to include in serialized output
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'date_joined']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'date_joined', 'profile_picture']
+    
+    def get_profile_picture(self, obj):
+        """Return profile picture URL from user's profile, or None if not set"""
+        try:
+            if obj.profile and obj.profile.avatar:
+                return obj.profile.avatar
+        except Profile.DoesNotExist:
+            pass
+        return None
 
 # Profile Serializer with nested UserSerializer (russian doll approach)
 class ProfileSerializer(serializers.ModelSerializer):
