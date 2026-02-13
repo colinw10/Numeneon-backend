@@ -42,6 +42,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # INSTALLED_APPS - Django apps/plugins (like Express middleware & route modules)
 # Add your custom apps here (e.g., 'api', 'users', 'posts')
 INSTALLED_APPS = [
+<<<<<<< HEAD
 'daphne',
 'django.contrib.admin',
 'django.contrib.auth',
@@ -60,6 +61,28 @@ INSTALLED_APPS = [
 'messages_app', # ← Fixed
 'notifications', # ← Fixed
 'myspace', # ← Fixed
+=======
+    'daphne', # ASGI server for WebSocket support
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',  # Serves static files (like express.static())
+    # Third-party apps
+    'rest_framework',
+     'channels',
+    'rest_framework_simplejwt',  # JWT authentication
+    'corsheaders',  # <-- Added for CORS
+    # Custom apps
+    'users.apps.UsersConfig',
+    'posts',
+    'friends',
+    'messages_app',  # Direct messaging
+    'notifications',
+    'mystudio',
+    'stories',  # Instagram-style stories
+>>>>>>> b52a59082e43a7528b9f686774cec1d527397d35
 ]
 # MIDDLEWARE - Request/response pipeline (exactly like Express app.use() chain)
 # Executes top-to-bottom on requests, bottom-to-top on responses
@@ -199,3 +222,19 @@ else:
             'BACKEND': 'channels.layers.InMemoryChannelLayer',
         },
     }
+
+# =============================================================================
+# PUSH NOTIFICATIONS (Web Push / VAPID)
+# =============================================================================
+# Generate VAPID keys once using: 
+#   python -c "from py_vapid import Vapid; v = Vapid(); v.generate_keys(); print('Private:', v.private_key.to_pem().decode()); print('Public:', v.public_key.to_pem_uncompressed().decode())"
+# Or use: npx web-push generate-vapid-keys
+#
+# Store these as environment variables (NEVER commit private key!)
+# VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY
+#
+VAPID_PUBLIC_KEY = os.environ.get('VAPID_PUBLIC_KEY', '')
+VAPID_PRIVATE_KEY = os.environ.get('VAPID_PRIVATE_KEY', '')
+VAPID_CLAIMS = {
+    'sub': 'mailto:admin@numeneon.com'  # Contact email for push service
+}

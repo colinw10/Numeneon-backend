@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
                 ('album_art', models.URLField(blank=True, null=True)),
                 ('order', models.PositiveIntegerField(default=0)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('myspace_profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='playlist_songs', to='myspace.myspaceprofile')),
+                ('myspace_profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='playlist_songs', to='mystudio.myspaceprofile')),
             ],
             options={
                 'verbose_name': 'Playlist Song',

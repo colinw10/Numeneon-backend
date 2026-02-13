@@ -18,8 +18,17 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import JsonResponse
+
+
+def health_check(request):
+    return JsonResponse({'status': 'ok', 'service': 'numeneon-backend'})
+
 
 urlpatterns = [
+    # Health check / root endpoint
+    path('', health_check, name='health_check'),
+    
     # Django Admin - already configured, don't modify
     path('admin/', admin.site.urls),
 
@@ -38,8 +47,14 @@ urlpatterns = [
     # Messages URLs
     path('api/messages/', include('messages_app.urls')),
     
-    # MYSPACE
-    path('api/myspace/', include('myspace.urls')),
+    # MYSTUDIO
+    path('api/mystudio/', include('mystudio.urls')),
+    
+    # Push Notifications
+    path('api/notifications/', include('notifications.urls')),
+    
+    # Stories (24-hour expiring posts)
+    path('api/stories/', include('stories.urls')),
 ]
 
 # Serve media files in development

@@ -22,9 +22,9 @@ from .serializers import (
 User = get_user_model()
 
 
-def get_or_create_myspace_profile(user):
+def get_or_create_mystudio_profile(user):
     """
-    Helper function: gets existing MySpace profile or creates new one.
+    Helper function: gets existing MyStudio profile or creates new one.
     Returns tuple: (profile_object, was_created_boolean)
     """
     profile, created = MySpaceProfile.objects.get_or_create(user=user)
@@ -33,15 +33,15 @@ def get_or_create_myspace_profile(user):
 
 @api_view(['GET'])  # Only accepts GET requests
 @permission_classes([AllowAny])  # Anyone can view (no login required)
-def get_myspace_profile(request, username):
+def get_mystudio_profile(request, username):
     """
-    GET /api/myspace/<username>/
+    GET /api/mystudio/<username>/
     
-    Public endpoint - fetch any user's MySpace profile + playlist.
+    Public endpoint - fetch any user's MyStudio profile + playlist.
     Used when visiting someone's profile page.
     
     Args:
-        username: from URL path (e.g., /api/myspace/pablo/)
+        username: from URL path (e.g., /api/mystudio/pablo/)
     
     Returns:
         JSON with profile_song, playlist array, settings
@@ -49,8 +49,8 @@ def get_myspace_profile(request, username):
     # Get user or return 404 if doesn't exist
     user = get_object_or_404(User, username=username)
     
-    # Get or create their MySpace profile
-    profile = get_or_create_myspace_profile(user)
+    # Get or create their MyStudio profile
+    profile = get_or_create_mystudio_profile(user)
     
     # Use PublicMySpaceProfileSerializer for frontend-expected format
     serializer = PublicMySpaceProfileSerializer(profile)
@@ -60,11 +60,11 @@ def get_myspace_profile(request, username):
 
 @api_view(['PUT', 'PATCH'])  # Accepts both PUT (full update) and PATCH (partial update)
 @permission_classes([IsAuthenticated])  # Must be logged in
-def update_myspace_settings(request):
+def update_mystudio_settings(request):
     """
-    PUT/PATCH /api/myspace/
+    PUT/PATCH /api/mystudio/
     
-    Update YOUR OWN MySpace settings (can't update someone else's).
+    Update YOUR OWN MyStudio settings (can't update someone else's).
     Used for setting "currently vibing to" song and auto_play setting.
     
     Example request body:
@@ -84,7 +84,7 @@ def update_myspace_settings(request):
     }
     """
     # Get the logged-in user's profile
-    profile = get_or_create_myspace_profile(request.user)
+    profile = get_or_create_mystudio_profile(request.user)
     
     # Validate incoming data
     serializer = UpdateProfileSongSerializer(data=request.data)
@@ -122,7 +122,7 @@ def update_myspace_settings(request):
 @permission_classes([IsAuthenticated])
 def add_song_to_playlist(request):
     """
-    POST /api/myspace/playlist/
+    POST /api/mystudio/playlist/
     
     Add a song to YOUR playlist.
     Frontend searches Spotify/Deezer, sends track data here to save.
@@ -137,7 +137,7 @@ def add_song_to_playlist(request):
         "album_art": "https://..."
     }
     """
-    profile = get_or_create_myspace_profile(request.user)
+    profile = get_or_create_mystudio_profile(request.user)
     
     # Validate incoming song data
     serializer = AddSongToPlaylistSerializer(data=request.data)
@@ -183,15 +183,15 @@ def add_song_to_playlist(request):
 @permission_classes([IsAuthenticated])
 def remove_song_from_playlist(request, song_id):
     """
-    DELETE /api/myspace/playlist/<song_id>/
+    DELETE /api/mystudio/playlist/<song_id>/
     
     Remove a song from YOUR playlist.
     Can only delete your own songs (not someone else's).
     
     Args:
-        song_id: from URL (e.g., /api/myspace/playlist/5/)
+        song_id: from URL (e.g., /api/mystudio/playlist/5/)
     """
-    profile = get_or_create_myspace_profile(request.user)
+    profile = get_or_create_mystudio_profile(request.user)
     
     # Get song with matching ID AND belonging to this user
     # Returns 404 if not found or belongs to different user
@@ -208,7 +208,7 @@ def remove_song_from_playlist(request, song_id):
 @permission_classes([IsAuthenticated])
 def reorder_playlist(request):
     """
-    PATCH /api/myspace/playlist/reorder/
+    PATCH /api/mystudio/playlist/reorder/
     
     Reorder songs in YOUR playlist (drag-and-drop).
     
@@ -220,7 +220,7 @@ def reorder_playlist(request):
     Frontend sends array of IDs in desired order.
     Backend updates 'order' field for each song.
     """
-    profile = get_or_create_myspace_profile(request.user)
+    profile = get_or_create_mystudio_profile(request.user)
     
     # Extract array of song IDs from request
     song_ids = request.data.get('song_ids', [])

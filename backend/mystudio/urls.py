@@ -3,10 +3,10 @@ from . import views
 
 urlpatterns = [
     # Public - anyone can view
-    path('<str:username>/', views.get_myspace_profile, name='myspace-profile'),
+    path('<str:username>/', views.get_mystudio_profile, name='mystudio-profile'),
 
     # Authenticated - update your own settings
-    path('', views.update_myspace_settings, name='myspace-update'),
+    path('', views.update_mystudio_settings, name='mystudio-update'),
 
     # Playlist management
     path('playlist/', views.add_song_to_playlist, name='playlist-add'),
