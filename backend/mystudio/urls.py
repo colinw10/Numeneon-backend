@@ -2,6 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # Current user's profile (must be first to not conflict with <username>)
+    path('profile/', views.get_my_mystudio_profile, name='mystudio-my-profile'),
+    
     # Public - anyone can view
     path('<str:username>/', views.get_mystudio_profile, name='mystudio-profile'),
 

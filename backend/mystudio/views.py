@@ -31,6 +31,19 @@ def get_or_create_mystudio_profile(user):
     return profile
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_my_mystudio_profile(request):
+    """
+    GET /api/mystudio/profile/
+    
+    Get the current authenticated user's own MyStudio profile.
+    """
+    profile = get_or_create_mystudio_profile(request.user)
+    serializer = PublicMySpaceProfileSerializer(profile)
+    return Response(serializer.data)
+
+
 @api_view(['GET'])  # Only accepts GET requests
 @permission_classes([AllowAny])  # Anyone can view (no login required)
 def get_mystudio_profile(request, username):
