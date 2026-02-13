@@ -16,6 +16,13 @@ class MySpaceProfile(models.Model):
         on_delete=models.CASCADE,
         related_name='myspace_profile'
     )
+    # ===== AVATAR (FRONTEND CONTROLLED) =====
+    # Stores avatar key, filename, or URL
+    avatar = models.CharField(
+        max_length=100,
+        default='default'
+    )
+
 
     # ===== PROFILE SONG ("currently vibing to") =====
     # The main song displayed at top of profile
@@ -77,6 +84,8 @@ class PlaylistSong(models.Model):
 
     # ===== TIMESTAMP =====
     created_at = models.DateTimeField(auto_now_add=True)
+
+    
 
     class Meta:
         db_table = 'myspace_playlistsong'  # Keep existing table name

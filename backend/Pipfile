@@ -12,6 +12,9 @@ djangorestframework-simplejwt = "==5.5.1"
 psycopg2-binary = "==2.9.11"
 pyjwt = "==2.10.1"
 sqlparse = "==0.5.5"
+daphne = "*"
+channels = "*"
+channels-redis = "*"
 
 [dev-packages]
 
