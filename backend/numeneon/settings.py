@@ -42,27 +42,25 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # INSTALLED_APPS - Django apps/plugins (like Express middleware & route modules)
 # Add your custom apps here (e.g., 'api', 'users', 'posts')
 INSTALLED_APPS = [
-    'daphne', # ASGI server for WebSocket support
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',  # Serves static files (like express.static())
-    # Third-party apps
-    'rest_framework',
-     'channels',
-    'rest_framework_simplejwt',  # JWT authentication
-    'corsheaders',  # <-- Added for CORS
-    # Custom apps
-    'users.apps.UsersConfig',
-    'posts',
-    'friends',
-    'messages_app',  # Direct messaging
-    'notifications',
-    'myspace',
+'daphne',
+'django.contrib.admin',
+'django.contrib.auth',
+'django.contrib.contenttypes',
+'django.contrib.sessions',
+'django.contrib.messages',
+'django.contrib.staticfiles',
+'rest_framework',
+'channels',
+'rest_framework_simplejwt',
+'corsheaders',
+# Custom apps - REMOVE 'backend.' prefix
+'users.apps.UsersConfig',# ← Fixed
+'posts', # ← Fixed
+'friends',# ← Fixed
+'messages_app', # ← Fixed
+'notifications', # ← Fixed
+'myspace', # ← Fixed
 ]
-
 # MIDDLEWARE - Request/response pipeline (exactly like Express app.use() chain)
 # Executes top-to-bottom on requests, bottom-to-top on responses
 MIDDLEWARE = [
