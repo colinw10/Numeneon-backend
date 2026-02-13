@@ -60,7 +60,42 @@ def pending_requests(request):
     return Response(pending, status=status.HTTP_200_OK)
 
 
-
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def friend_suggestions(request):
+    """
+    Returns users who are NOT:
+    - The current user
+    - Already friends
+    - Pending requests (sent OR received)
+    """
+    user = request.user
+    
+    # Get IDs to exclude
+    friend_ids = Friendship.objects.filter(user=user).values_list('friend_id', flat=True)
+    sent_request_ids = FriendRequest.objects.filter(from_user=user).values_list('to_user_id', flat=True)
+    received_request_ids = FriendRequest.objects.filter(to_user=user).values_list('from_user_id', flat=True)
+    
+    exclude_ids = set(friend_ids) | set(sent_request_ids) | set(received_request_ids) | {user.id}
+    
+    # Get suggested users
+    suggested_users = User.objects.exclude(id__in=exclude_ids).select_related('profile')[:20]
+    
+    suggestions = []
+    for u in suggested_users:
+        profile_picture = None
+        if hasattr(u, 'profile') and u.profile:
+            profile_picture = u.profile.profile_picture
+        
+        suggestions.append({
+            'id': u.id,
+            'username': u.username,
+            'first_name': u.first_name,
+            'last_name': u.last_name,
+            'profile_picture': profile_picture,
+        })
+    
+    return Response(suggestions, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])

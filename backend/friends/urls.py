@@ -9,6 +9,7 @@ from . import views
 
 urlpatterns = [
     path('', views.friend_list, name='friend_list'),
+    path('suggestions/', views.friend_suggestions, name='friend_suggestions'),
     path('requests/', views.pending_requests, name='pending_requests'),
     path('request/<int:user_id>/', views.send_request, name='send_request'),
     path('accept/<int:request_id>/', views.accept_request, name='accept_request'),
