@@ -118,13 +118,16 @@ def update_mystudio_settings(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+MAX_PLAYLIST_SONGS = 5  # Top 5 songs limit
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_song_to_playlist(request):
     """
     POST /api/mystudio/playlist/
     
-    Add a song to YOUR playlist.
+    Add a song to YOUR playlist (max 5 songs).
     Frontend searches Spotify/Deezer, sends track data here to save.
     
     Request body:
@@ -138,6 +141,13 @@ def add_song_to_playlist(request):
     }
     """
     profile = get_or_create_mystudio_profile(request.user)
+    
+    # Check playlist limit
+    if profile.playlist_songs.count() >= MAX_PLAYLIST_SONGS:
+        return Response(
+            {'error': f'Playlist limit reached. Maximum {MAX_PLAYLIST_SONGS} songs allowed.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
     
     # Validate incoming song data
     serializer = AddSongToPlaylistSerializer(data=request.data)

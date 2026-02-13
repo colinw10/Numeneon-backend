@@ -22,8 +22,8 @@ class MySpaceProfile(models.Model):
     profile_song_title = models.CharField(max_length=255, blank=True, null=True)
     profile_song_artist = models.CharField(max_length=255, blank=True, null=True)
     profile_song_external_id = models.CharField(max_length=100, blank=True, null=True)  # Spotify/Deezer ID
-    profile_song_preview_url = models.URLField(blank=True, null=True)  # 30-second preview audio
-    profile_song_album_art = models.URLField(blank=True, null=True)  # Album cover image
+    profile_song_preview_url = models.URLField(max_length=500, blank=True, null=True)  # 30-second preview audio
+    profile_song_album_art = models.URLField(max_length=500, blank=True, null=True)  # Album cover image
 
     # ===== SETTINGS =====
     # Should the profile song play automatically when someone visits?
@@ -36,6 +36,7 @@ class MySpaceProfile(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        db_table = 'myspace_myspaceprofile'  # Keep existing table name
         verbose_name = 'MySpace Profile'
         verbose_name_plural = 'MySpace Profiles'
 
@@ -66,8 +67,8 @@ class PlaylistSong(models.Model):
     artist = models.CharField(max_length=255)
     duration_ms = models.IntegerField(default=0)  # Track length in milliseconds
     external_id = models.CharField(max_length=100)  # Spotify/Deezer track ID
-    preview_url = models.URLField(blank=True, null=True)  # 30-second preview audio
-    album_art = models.URLField(blank=True, null=True)  # Album cover image
+    preview_url = models.URLField(max_length=500, blank=True, null=True)  # 30-second preview audio
+    album_art = models.URLField(max_length=500, blank=True, null=True)  # Album cover image
 
     # ===== PLAYLIST ORDERING =====
     # Determines position in playlist (0 = first, 1 = second, etc.)
@@ -78,6 +79,7 @@ class PlaylistSong(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        db_table = 'myspace_playlistsong'  # Keep existing table name
         # Default sort: by order field, then by creation date
         ordering = ['order', 'created_at']
         verbose_name = 'Playlist Song'
