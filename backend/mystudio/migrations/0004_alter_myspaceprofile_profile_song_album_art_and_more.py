@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mystudio', '0001_initial'),
+        ('mystudio', '0003_alter_myspaceprofile_avatar'),
     ]
 
     operations = [
