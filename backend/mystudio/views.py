@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.db import models
+import requests
 
 from .models import MySpaceProfile, PlaylistSong
 from .serializers import (
@@ -42,6 +43,40 @@ def get_my_mystudio_profile(request):
     profile = get_or_create_mystudio_profile(request.user)
     serializer = PublicMySpaceProfileSerializer(profile)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def search_songs(request):
+    """
+    GET /api/mystudio/search/?q=song+name
+    
+    Search for songs using Deezer API. Returns tracks with preview URLs.
+    """
+    query = request.GET.get('q', '').strip()
+    if not query:
+        return Response({'error': 'Query parameter "q" is required'}, status=400)
+    
+    try:
+        resp = requests.get(f'https://api.deezer.com/search?q={query}&limit=10', timeout=10)
+        data = resp.json()
+        
+        results = []
+        for track in data.get('data', []):
+            results.append({
+                'id': track.get('id'),
+                'title': track.get('title'),
+                'artist': track.get('artist', {}).get('name'),
+                'album': track.get('album', {}).get('title'),
+                'album_art': track.get('album', {}).get('cover_medium'),
+                'preview_url': track.get('preview'),
+                'duration_ms': track.get('duration', 0) * 1000,
+                'external_id': str(track.get('id')),
+            })
+        
+        return Response({'results': results})
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
 
 
 @api_view(['GET'])  # Only accepts GET requests

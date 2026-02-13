@@ -2,7 +2,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # Current user's profile (must be first to not conflict with <username>)
+    # Search songs via Deezer
+    path('search/', views.search_songs, name='mystudio-search'),
+    
+    # Current user's profile (must be before <username> to not conflict)
     path('profile/', views.get_my_mystudio_profile, name='mystudio-my-profile'),
     
     # Public - anyone can view
