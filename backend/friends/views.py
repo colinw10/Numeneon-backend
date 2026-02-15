@@ -83,16 +83,16 @@ def friend_suggestions(request):
     
     suggestions = []
     for u in suggested_users:
-        profile_picture = None
-        if hasattr(u, 'profile') and u.profile:
-            profile_picture = u.profile.profile_picture
+        avatar = None
+        if hasattr(u, 'profile') and u.profile and u.profile.avatar:
+            avatar = u.profile.avatar
         
         suggestions.append({
             'id': u.id,
             'username': u.username,
             'first_name': u.first_name,
             'last_name': u.last_name,
-            'profile_picture': profile_picture,
+            'profile_picture': avatar,  # Keep key name for frontend compatibility
         })
     
     return Response(suggestions, status=status.HTTP_200_OK)
