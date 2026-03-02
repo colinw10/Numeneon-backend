@@ -63,14 +63,18 @@ class PublicMySpaceProfileSerializer(serializers.ModelSerializer):
     wallpaper = serializers.SerializerMethodField()
     sliderStyle = serializers.SerializerMethodField()
     
+    # Avatar ID stored in the avatar field (e.g. 'av5' or 'profile-picture')
+    selectedAvatar = serializers.CharField(source='avatar', read_only=True)
+
     # Playlist with full song data including preview_url
     playlist = PlaylistSongSerializer(source='playlist_songs', many=True, read_only=True)
-    
+
     class Meta:
         model = MySpaceProfile
         fields = [
+            'selectedAvatar',
             'songTitle',
-            'songArtist', 
+            'songArtist',
             'mood',
             'customBio',
             'theme',
@@ -172,7 +176,7 @@ class AddSongToPlaylistSerializer(serializers.Serializer):
 
 class UpdateProfileSongSerializer(serializers.Serializer):
     """
-    For updating the "currently vibing to" profile song.
+    For updating the "currently vibing to" profile song and avatar.
     All fields optional so you can update just one field at a time.
     """
     title = serializers.CharField(max_length=255, required=False, allow_null=True)
@@ -181,3 +185,4 @@ class UpdateProfileSongSerializer(serializers.Serializer):
     preview_url = serializers.URLField(required=False, allow_null=True)
     album_art = serializers.URLField(required=False, allow_null=True)
     auto_play = serializers.BooleanField(required=False)
+    avatar = serializers.CharField(max_length=100, required=False, allow_null=True, allow_blank=True)

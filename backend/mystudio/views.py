@@ -155,6 +155,8 @@ def update_mystudio_settings(request):
             profile.profile_song_album_art = data['album_art']
         if 'auto_play' in data:
             profile.auto_play = data['auto_play']
+        if 'avatar' in data:
+            profile.avatar = data['avatar'] or ''
 
         # Save changes to database
         profile.save()
